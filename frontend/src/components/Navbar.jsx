@@ -16,24 +16,25 @@ const Navbar = () => {
   const navLink = 'hover:text-accent transition-colors duration-200 whitespace-nowrap';
 
   return (
-    <nav className="bg-primary/95 backdrop-blur-md text-white shadow-lg sticky top-0 z-50 border-b border-white/10">
+    <nav className="bg-cream/90 backdrop-blur-md text-stone-700 border-b border-stone-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link
             to="/"
             onClick={() => setMenuOpen(false)}
-            className="text-xl font-heading font-bold text-white hover:text-accent transition-colors"
+            className="flex items-center gap-2 text-xl font-heading font-bold text-primary hover:opacity-80 transition-all"
           >
-            🌾 MilletVerse
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">M</div>
+            MilletVerse
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link to="/encyclopedia" className={navLink}>Encyclopedia</Link>
-            <Link to="/recipes" className={navLink}>Recipes</Link>
-            <Link to="/experts" className={navLink}>Experts</Link>
-            <Link to="/map" className={navLink}>Map</Link>
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-stone-500">
+            <Link to="/encyclopedia" className="hover:text-primary transition-colors">Encyclopedia</Link>
+            <Link to="/recipes" className="hover:text-primary transition-colors">Recipes</Link>
+            <Link to="/experts" className="hover:text-primary transition-colors">Experts</Link>
+            <Link to="/map" className="hover:text-primary transition-colors">Map</Link>
 
             {isAuthenticated ? (
               <>
@@ -55,13 +56,13 @@ const Navbar = () => {
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-3 ml-2 pl-4 border-l border-white/20">
-                <Link to="/login" className={navLink}>Login</Link>
+              <div className="flex items-center gap-6 ml-4">
+                <Link to="/login" className="text-stone-600 hover:text-primary font-bold">Login</Link>
                 <Link
                   to="/register"
-                  className="bg-accent text-primary font-bold px-4 py-2 rounded-lg hover:bg-yellow-400 transition-all text-sm"
+                  className="bg-primary text-white font-bold px-6 py-2.5 rounded-xl shadow-sm hover:bg-secondary transition-all"
                 >
-                  Sign Up
+                  Get Started
                 </Link>
               </div>
             )}

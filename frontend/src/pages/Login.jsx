@@ -102,10 +102,6 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-4 p-4 bg-cream rounded-xl border border-stone-100">
-            <p className="text-xs text-stone-500 font-semibold mb-1">Demo account:</p>
-            <p className="text-xs text-stone-600 font-mono">admin@milletverse.com / password123</p>
-          </div>
         </div>
 
         <p className="text-center text-stone-500 text-sm mt-6">
