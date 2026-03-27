@@ -9,6 +9,11 @@ const isAdmin = require('../middleware/isAdmin');
 router.use(verifyToken, isAdmin);
 
 router.get('/stats', getStats);
+router.get('/users', require('../controllers/adminController').getAllUsers);
+router.get('/experts', require('../controllers/adminController').getAllExperts);
+router.post('/experts', require('../controllers/adminController').createExpert);
+router.put('/experts/:id', require('../controllers/adminController').updateExpert);
+router.delete('/experts/:id', require('../controllers/adminController').deleteExpert);
 router.get('/pending-experts', getPendingExperts);
 router.get('/pending-recipes', getPendingRecipes);
 router.put('/experts/:id/approve', approveExpert);

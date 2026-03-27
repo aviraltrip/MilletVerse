@@ -131,36 +131,8 @@ const Register = () => {
               />
             </div>
 
-            {/* Role selector */}
-            <div>
-              <label className="block text-sm font-semibold text-stone-600 mb-3">I am joining as a...</label>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { value: 'user', label: '🧑 Health Seeker', desc: 'Get personalized nutrition plans' },
-                  { value: 'expert', label: '👨‍⚕️ Nutrition Expert', desc: 'Share recipes & expertise' },
-                ].map((opt) => (
-                  <label
-                    key={opt.value}
-                    className={`flex flex-col p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                      formData.role === opt.value
-                        ? 'border-secondary bg-secondary/5'
-                        : 'border-stone-200 hover:border-stone-300'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="role"
-                      value={opt.value}
-                      checked={formData.role === opt.value}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <span className="font-semibold text-stone-700 text-sm">{opt.label}</span>
-                    <span className="text-xs text-stone-400 mt-1">{opt.desc}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+            {/* Role selector removed - only users can signup */}
+            <input type="hidden" name="role" value="user" />
 
             <button
               type="submit"

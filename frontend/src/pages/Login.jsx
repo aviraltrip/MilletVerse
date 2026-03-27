@@ -22,8 +22,14 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      await login(formData);
-      navigate(from, { replace: true });
+      const res = await login(formData);
+      if (res.user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else if (res.user.role === 'expert') {
+        navigate('/expert-portal', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
     } finally {

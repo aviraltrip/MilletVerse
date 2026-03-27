@@ -84,3 +84,97 @@ exports.getPendingRecipes = async (req, res) => {
     res.status(500).json({ message: 'Server error fetching pending recipes.' });
   }
 };
+
+// @desc    Get all users
+// @route   GET /api/admin/users
+// @access  Private/Admin
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: 'user' }).select('-password').sort('-createdAt');
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching users.' });
+  }
+};
+
+// @desc    Get all experts
+// @route   GET /api/admin/experts
+// @access  Private/Admin
+exports.getAllExperts = async (req, res) => {
+  try {
+    const experts = await Expert.find().select('-password').sort('-createdAt');
+    res.status(200).json(experts);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching experts.' });
+  }
+};
+
+// @desc    Create new expert
+// @route   POST /api/admin/experts
+// @access  Private/Admin
+exports.createExpert = async (req, res) => {
+  try {
+    const { name, email, password, specialty, credentials, bio } = req.body;
+    
+    const existingExpert = await Expert.findOne({ email });
+    if (existingExpert) {
+      return res.status(400).json({ message: 'Expert with this email already exists' });
+    }
+
+    const bcrypt = require('bcrypt');
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const expert = new Expert({
+      name,
+      email,
+      password: hashedPassword,
+      specialty,
+      credentials,
+      bio,
+      approvedStatus: true // Admin created experts are auto-approved
+    });
+
+    await expert.save();
+    res.status(201).json({ message: 'Expert created successfully', expert: { id: expert._id, name: expert.name } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error creating expert.' });
+  }
+};
+
+// @desc    Update expert
+// @route   PUT /api/admin/experts/:id
+// @access  Private/Admin
+exports.updateExpert = async (req, res) => {
+  try {
+    const { name, email, specialty, credentials, bio, password } = req.body;
+    const updateData = { name, email, specialty, credentials, bio };
+    
+    if (password) {
+      const bcrypt = require('bcrypt');
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    const expert = await Expert.findByIdAndUpdate(req.params.id, updateData, { new: true }).select('-password');
+    if (!expert) return res.status(404).json({ message: 'Expert not found' });
+    
+    res.status(200).json(expert);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating expert.' });
+  }
+};
+
+// @desc    Delete expert
+// @route   DELETE /api/admin/experts/:id
+// @access  Private/Admin
+exports.deleteExpert = async (req, res) => {
+  try {
+    const expert = await Expert.findByIdAndDelete(req.params.id);
+    if (!expert) return res.status(404).json({ message: 'Expert not found' });
+    res.status(200).json({ message: 'Expert deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting expert.' });
+  }
+};

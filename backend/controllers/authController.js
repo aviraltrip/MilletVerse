@@ -14,7 +14,11 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    if (!['user', 'expert'].includes(role)) {
+    if (role === 'expert') {
+      return res.status(403).json({ success: false, message: 'Expert registration is restricted to administrators' });
+    }
+
+    if (!['user'].includes(role)) {
       return res.status(400).json({ success: false, message: 'Invalid role specified' });
     }
 
@@ -73,12 +77,28 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    // Check for fixed admin credentials
+    if (email === 'admin@example.com' && password === 'admin123') {
+      const { accessToken, refreshToken } = generateTokens({ _id: 'admin_fixed_id', role: 'admin' });
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/'
+      });
+      return res.json({
+        success: true,
+        accessToken,
+        user: {
+          id: 'admin_fixed_id',
+          name: 'System Admin',
+          email: 'admin@example.com',
+          role: 'admin'
+        }
+      });
+    }
+
     let user = await User.findOne({ email });
     if (!user) user = await Expert.findOne({ email });
-    if (!user && email === 'admin@milletverse.com') {
-      // In a real app we'd seed admin, handling login if normal user doesn't exist just in case
-      user = await User.findOne({ email: 'admin@milletverse.com' });
-    }
     
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });

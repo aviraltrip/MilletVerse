@@ -31,14 +31,18 @@ const Navbar = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-stone-500">
-            <Link to="/encyclopedia" className="hover:text-primary transition-colors">Encyclopedia</Link>
-            <Link to="/recipes" className="hover:text-primary transition-colors">Recipes</Link>
-            <Link to="/experts" className="hover:text-primary transition-colors">Experts</Link>
-            <Link to="/map" className="hover:text-primary transition-colors">Map</Link>
+            {role !== 'admin' && (
+              <>
+                <Link to="/encyclopedia" className="hover:text-primary transition-colors">Encyclopedia</Link>
+                <Link to="/recipes" className="hover:text-primary transition-colors">Recipes</Link>
+                <Link to="/experts" className="hover:text-primary transition-colors">Experts</Link>
+                <Link to="/map" className="hover:text-primary transition-colors">Map</Link>
+              </>
+            )}
 
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard" className={navLink}>Dashboard</Link>
+                {role !== 'admin' && <Link to="/dashboard" className={navLink}>Dashboard</Link>}
                 {role === 'expert' && (
                   <Link to="/expert-portal" className={navLink}>Expert Portal</Link>
                 )}
@@ -88,7 +92,7 @@ const Navbar = () => {
         }`}
       >
         <div className="bg-primary border-t border-white/10 px-4 py-4 flex flex-col gap-4 text-sm font-medium">
-          {[
+          {role !== 'admin' && [
             { to: '/encyclopedia', label: 'Encyclopedia' },
             { to: '/recipes', label: 'Recipes' },
             { to: '/experts', label: 'Experts' },
@@ -102,9 +106,11 @@ const Navbar = () => {
           <div className="border-t border-white/10 pt-4">
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard" className={`${navLink} block mb-3`} onClick={() => setMenuOpen(false)}>
-                  Dashboard
-                </Link>
+                {role !== 'admin' && (
+                  <Link to="/dashboard" className={`${navLink} block mb-3`} onClick={() => setMenuOpen(false)}>
+                    Dashboard
+                  </Link>
+                )}
                 {role === 'expert' && (
                   <Link to="/expert-portal" className={`${navLink} block mb-3`} onClick={() => setMenuOpen(false)}>
                     Expert Portal
