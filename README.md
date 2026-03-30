@@ -94,7 +94,38 @@ cd d:\milletverse\frontend
 npm run dev
 ```
 
-## Notes
+## Production Deployment
 
-- **Recipe image upload** requires Cloudinary env vars. If not set, recipe creation still works but image upload will fail.
-- The frontend uses `/api` as the base URL; in dev, ensure your Vite proxy (or deployment) routes `/api` to the backend.
+MilletVerse is optimized for a decoupled deployment: **Backend on Render** and **Frontend on Vercel**.
+
+### 1. Backend (Render)
+
+1. **Environment Variables**:
+   - `NODE_ENV`: `production`
+   - `MONGO_URI`: Your MongoDB Atlas connection string.
+   - `JWT_SECRET` & `JWT_REFRESH_SECRET`: Secure random strings.
+   - `ADMIN_EMAIL` & `ADMIN_PASSWORD`: Your initial admin credentials.
+   - `ALLOWED_ORIGINS`: Your Vercel frontend URL (e.g., `https://millet-verse-ui.vercel.app`).
+   - `CLOUDINARY_URL` / `GEMINI_API_KEY`: (Optional) For images and AI.
+2. **Build Settings**:
+   - **Root Directory**: `backend`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+
+### 2. Frontend (Vercel)
+
+1. **Environment Variables**:
+   - `VITE_API_BASE_URL`: Your Render backend URL + `/api` (e.g., `https://millet-verse-api.onrender.com/api`).
+2. **Build Settings**:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+3. **Routing**: The included `vercel.json` ensures that client-side routing (React Router) works correctly in production.
+
+## Notes & Security
+
+- **Secure Cookies**: In production (`NODE_ENV=production`), the app uses `SameSite=None` and `Secure` cookies to allow the frontend (Vercel) to communicate with the backend (Render).
+- **NoSQL Injection**: The backend uses `express-mongo-sanitize` to protect against malicious query patterns.
+- **Rate Limiting**: API routes are rate-limited to 200 requests per 15-minute window.
+

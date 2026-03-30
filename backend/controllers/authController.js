@@ -49,12 +49,16 @@ exports.register = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(newUser);
     
-    // In production we should set domain and secure true
-    res.cookie('refreshToken', refreshToken, {
+    // Secure cookie settings for production (cross-domain support)
+    const cookieOptions = {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      path: '/'
-    });
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    };
+
+    res.cookie('refreshToken', refreshToken, cookieOptions);
 
     res.status(201).json({
       success: true,
@@ -77,21 +81,29 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    // Check for fixed admin credentials
-    if (email === 'admin@example.com' && password === 'admin123') {
+    // Check for fixed admin credentials from environment variables
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (email === adminEmail && password === adminPass) {
       const { accessToken, refreshToken } = generateTokens({ _id: 'admin_fixed_id', role: 'admin' });
-      res.cookie('refreshToken', refreshToken, {
+      
+      const cookieOptions = {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
-        path: '/'
-      });
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+      };
+
+      res.cookie('refreshToken', refreshToken, cookieOptions);
       return res.json({
         success: true,
         accessToken,
         user: {
           id: 'admin_fixed_id',
           name: 'System Admin',
-          email: 'admin@example.com',
+          email: adminEmail,
           role: 'admin'
         }
       });
@@ -111,11 +123,15 @@ exports.login = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    const cookieOptions = {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      path: '/'
-    });
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    };
+
+    res.cookie('refreshToken', refreshToken, cookieOptions);
 
     res.json({
       success: true,
@@ -153,6 +169,11 @@ exports.refresh = (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie('refreshToken', { httpOnly: true, path: '/' });
+  res.clearCookie('refreshToken', { 
+    httpOnly: true, 
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  });
   res.json({ success: true, message: 'Logged out successfully' });
 };

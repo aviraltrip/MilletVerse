@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const connectDB = require('./config/db');
 
@@ -17,6 +17,9 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Trust proxy for Render/Heroku/Vercel environments
+app.set('trust proxy', 1);
 
 // Security and Optimization Middleware
 app.use(helmet({
@@ -38,9 +41,24 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
 // Middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : ['http://localhost:5173'];
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -68,20 +86,11 @@ app.use('/api/ai', ai);
 app.use('/api/health-logs', healthLog);
 app.use('/api/admin', admin);
 
-// Serve frontend statically in production
-if (process.env.NODE_ENV === 'production') {
-  const frontendDistPath = path.join(__dirname, '../frontend/dist');
-  app.use(express.static(frontendDistPath));
-
-  // Any unhandled backend route serves the React app
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(frontendDistPath, 'index.html'))
-  );
-} else {
-  app.get('/', (req, res) => {
-    res.send('MilletVerse API is running...');
-  });
-}
+// In production, we don't serve static files here because Frontend is on Vercel.
+// But we keep the health check.
+app.get('/', (req, res) => {
+  res.send('MilletVerse API is running securely...');
+});
 
 // Global Error Handlers must be at the end
 app.use(notFound);
