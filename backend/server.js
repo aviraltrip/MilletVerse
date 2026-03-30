@@ -42,8 +42,7 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+// Middleware
 
 // Middleware
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
