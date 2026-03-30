@@ -94,13 +94,6 @@ cd d:\milletverse\frontend
 npm run dev
 ```
 
-## Admin login (dev)
-
-This project includes a fixed admin login in the backend:
-
-- **Email**: `admin@example.com`
-- **Password**: `admin123`
-
 ## Notes
 
 - **Recipe image upload** requires Cloudinary env vars. If not set, recipe creation still works but image upload will fail.
