@@ -14,15 +14,15 @@ A comprehensive, full-stack MERN health-tech aggregator designed to promote mill
 *   **Dynamic Recipes:** Filterable, searchable repository of millet recipes focusing on specific conditions (Diabetes, PCOD, etc.).
 *   **Health Tracking & Visualizations:** Daily wellness check-in logging energy, digestion, weight, and blood sugar, visualized dynamically using Recharts.
 *   **Geospatial Insights (Maps):** Dual-mode interactive maps (Store Locator for Hubli via Haversine distance & State-level cultivation visualizations) powered by React-Leaflet.
-*   **Admin Dashboard:** Centralized command center for managing pending expert applications, reviewing recipe submissions, and aggregating platform usage stats.
+*   **Admin Management System:** Robust Admin Login and Panel. Secure admin authentication with restricted access for managing experts (reviewing registrations), users, and platform data.
 
 ### AI Integrations 🧠 (Powered by Google Gemini SDK)
 *   **Clinical Note Interpreter:** Paste doctor prescriptions to extract structured therapeutic targets mapped to specific millet diets.
 *   **Custom Recipe Generator:** AI drafts completely novel recipes based on available ingredients and user health constraints.
 
 ## 🛠️ Technology Stack
-*   **Frontend:** React (Vite), Tailwind CSS (Vanilla), React Router, Axios, Recharts, React-Leaflet, jspdf.
-*   **Backend:** Node.js, Express.js, MongoDB (Mongoose), JWT, Bcrypt.
+*   **Frontend:** React (Vite), Tailwind CSS v4, React Router, Axios, Recharts, React-Leaflet, jspdf.
+*   **Backend:** Node.js, Express.js, MongoDB (Mongoose), JWT (cookie-based session management), Bcrypt.
 *   **Services:** Cloudinary (for image uploads), Google Gemini SDK (for AI capabilities).
 
 ---
