@@ -7,6 +7,8 @@ const ExpertPortal = () => {
   const [myRecipes, setMyRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [recipeImageFile, setRecipeImageFile] = useState(null);
+  const [imageInputKey, setImageInputKey] = useState(0);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -85,7 +87,23 @@ const ExpertPortal = () => {
         preparationNotes: formData.preparationNotes
       };
 
-      await api.post('/recipes', recipeData);
+      // Send multipart/form-data so experts can attach a recipe image.
+      const fd = new FormData();
+      fd.append('title', recipeData.title);
+      fd.append('milletType', recipeData.milletType);
+      fd.append('ingredients', JSON.stringify(recipeData.ingredients));
+      fd.append('steps', JSON.stringify(recipeData.steps));
+      fd.append('tags', JSON.stringify(recipeData.tags));
+      fd.append('cookTime', String(recipeData.cookTime));
+      fd.append('difficulty', recipeData.difficulty);
+      fd.append('healthLabels', JSON.stringify(recipeData.healthLabels));
+      fd.append('nutritionalBreakdown', JSON.stringify(recipeData.nutritionalBreakdown));
+      fd.append('preparationNotes', recipeData.preparationNotes || '');
+      if (recipeImageFile) {
+        fd.append('image', recipeImageFile);
+      }
+
+      await api.post('/recipes', fd);
       setSubmitStatus({ status: 'success', message: 'Recipe successfully submitted and published!' });
       
       // Reset form
@@ -93,6 +111,8 @@ const ExpertPortal = () => {
         title: '', milletType: 'Finger Millet', ingredientsText: '', stepsText: '', tagsText: '', 
         cookTime: '', difficulty: 'medium', healthLabelsText: '', calories: '', protein: '', carbs: '', fiber: '', preparationNotes: ''
       });
+      setRecipeImageFile(null);
+      setImageInputKey((k) => k + 1);
       
       // Hide success message after 3 seconds
       setTimeout(() => setSubmitStatus({ status: '', message: '' }), 3000);
@@ -179,6 +199,24 @@ const ExpertPortal = () => {
                 <div>
                   <label className="block text-sm font-bold text-stone-600 mb-2">Tags (comma-separated)</label>
                   <input name="tagsText" value={formData.tagsText} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-secondary outline-none transition-all" placeholder="e.g. Breakfast, Vegan, Gluten-Free" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-stone-600 mb-2">
+                    Recipe Image (optional)
+                  </label>
+                  <input
+                    key={imageInputKey}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setRecipeImageFile(e.target.files?.[0] || null)}
+                    className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-secondary outline-none transition-all bg-white"
+                  />
+                  {recipeImageFile && (
+                    <p className="text-xs text-stone-500 mt-2">
+                      Selected: {recipeImageFile.name}
+                    </p>
+                  )}
                 </div>
               </div>
 

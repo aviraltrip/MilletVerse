@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../api/axiosInstance';
 import RecipeModal from '../components/RecipeModal';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const AiRecipeGenerator = () => {
   const [ingredients, setIngredients] = useState('');
@@ -10,6 +12,14 @@ const AiRecipeGenerator = () => {
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [saveStatus, setSaveStatus] = useState(''); // 'saved' | 'error' | ''
+  const { role } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (role === 'expert') {
+      navigate('/expert-portal', { replace: true });
+    }
+  }, [role, navigate]);
 
   const handleGenerate = async () => {
     if (!ingredients.trim()) return;
@@ -126,7 +136,7 @@ const AiRecipeGenerator = () => {
                     <span className="capitalize">📊 {generatedRecipe.difficulty}</span>
                  </div>
                  
-                 <div className="mb-6 flex-grow">
+               <div className="mb-6 grow">
                    <p className="text-stone-600 text-sm mb-4 line-clamp-4">
                      {generatedRecipe.preparationNotes || "A delicious, custom-tailored recipe crafted just for you using the power of ancient grains."}
                    </p>

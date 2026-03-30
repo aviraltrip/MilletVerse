@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import api from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const HealthLog = () => {
+  const { role } = useAuth();
+  const navigate = useNavigate();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,8 +33,12 @@ const HealthLog = () => {
   };
 
   useEffect(() => {
+    if (role === 'expert') {
+      navigate('/expert-portal', { replace: true });
+      return;
+    }
     fetchLogs();
-  }, []);
+  }, [role]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -93,7 +101,7 @@ const HealthLog = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                <div>
-                  <label className="block text-sm font-bold text-stone-600 mb-2 flex justify-between">
+                  <label className="text-sm font-bold text-stone-600 mb-2 flex justify-between">
                     Energy Level ⚡ 
                     <span className="text-primary">{formData.energyLevel}/10</span>
                   </label>
@@ -135,7 +143,7 @@ const HealthLog = () => {
 
         {/* Charts & History */}
         <div className="lg:col-span-8 flex flex-col gap-8">
-          <div className="bg-white rounded-3xl shadow-sm border border-stone-100 p-8 flex-grow">
+          <div className="bg-white rounded-3xl shadow-sm border border-stone-100 p-8 grow">
             <h3 className="text-xl font-bold text-stone-800 mb-8 flex items-center gap-3">
               <span className="bg-accent/10 text-accent w-10 h-10 rounded-full flex items-center justify-center text-xl">📈</span>
               Trend Analysis

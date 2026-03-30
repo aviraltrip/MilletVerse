@@ -6,13 +6,20 @@ import PrescriptionCard from '../components/PrescriptionCard';
 import { Activity, Edit3, HeartPulse, FileText } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const navigate = useNavigate();
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (role === 'expert') {
+      navigate('/expert-portal', { replace: true });
+    }
+  }, [role, navigate]);
+
+  useEffect(() => {
     const fetchPrescriptions = async () => {
+      if (role === 'expert') return;
       try {
         const data = await getMyPrescriptions();
         setPrescriptions(data.prescriptions || []);
@@ -27,7 +34,7 @@ const Dashboard = () => {
       }
     };
     fetchPrescriptions();
-  }, [navigate]);
+  }, [navigate, role]);
 
   if (loading) return <div className="p-8 text-center mt-20">Loading intelligence...</div>;
 
@@ -81,16 +88,6 @@ const Dashboard = () => {
               <li><Link to="/map" className="text-gray-600 hover:text-primary transition flex items-center space-x-2"><span className="w-2 h-2 rounded-full bg-accent"></span><span>Local Store Map</span></Link></li>
               <li><Link to="/doctor-note" className="text-gray-600 hover:text-primary transition flex items-center space-x-2"><span className="w-2 h-2 rounded-full bg-accent"></span><span>Doctor Note Interpreter</span></Link></li>
             </ul>
-          </div>
-
-          <div className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-accent">
-             <h3 className="font-bold text-lg mb-3 flex items-center space-x-2">
-              <FileText size={20} className="text-accent"/>
-              <span>Recent Logs</span>
-            </h3>
-            <div className="text-sm text-gray-500 p-4 text-center bg-cream rounded-lg">
-              No recent health logs. Log your daily condition to see trends.
-            </div>
           </div>
         </div>
 

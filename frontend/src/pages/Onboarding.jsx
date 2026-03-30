@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generatePrescription } from '../api/prescription';
+import { useAuth } from '../context/AuthContext';
 
 const conditionsList = ['diabetes', 'anemia', 'obesity', 'pcod', 'hypertension', 'celiac', 'thyroid'];
 
 const Onboarding = () => {
+  const { role } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -13,6 +15,12 @@ const Onboarding = () => {
     conditions: [],
     labValues: { fastingBloodSugar: '', postprandialSugar: '', hemoglobin: '' }
   });
+
+  useEffect(() => {
+    if (role === 'expert') {
+      navigate('/expert-portal', { replace: true });
+    }
+  }, [role, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
-import RecipeModal from '../components/RecipeModal';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, users, experts, recipes
+  const [activeTab, setActiveTab] = useState('overview'); // overview, users, experts
   const [stats, setStats] = useState(null);
   const [experts, setExperts] = useState([]);
   const [users, setUsers] = useState([]);
-  const [pendingRecipes, setPendingRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [toast, setToast] = useState(null);
   
   // Expert Form State
@@ -52,38 +49,15 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchPendingRecipes = async () => {
-    try {
-      const res = await api.get('/admin/pending-recipes');
-      setPendingRecipes(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const loadData = async () => {
     setLoading(true);
-    await Promise.all([fetchStats(), fetchExperts(), fetchUsers(), fetchPendingRecipes()]);
+    await Promise.all([fetchStats(), fetchExperts(), fetchUsers()]);
     setLoading(false);
   };
 
   useEffect(() => {
     loadData();
   }, []);
-
-  const handleApproveRecipe = async (id) => {
-    try {
-      await api.put(`/admin/recipes/${id}/approve`);
-      await fetchPendingRecipes();
-      await fetchStats();
-      if (selectedRecipe && selectedRecipe._id === id) {
-        setSelectedRecipe(null);
-      }
-      showToast('Recipe approved successfully!');
-    } catch (err) {
-      showToast('Failed to approve recipe.', 'error');
-    }
-  };
 
   const handleExpertSubmit = async (e) => {
     e.preventDefault();
@@ -149,13 +123,13 @@ const AdminDashboard = () => {
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-stone-800">Admin Dashboard</h1>
         </div>
         <div className="flex gap-2 p-1 bg-stone-100/80 backdrop-blur rounded-xl border border-stone-200 shadow-sm overflow-x-auto w-full md:w-auto">
-          {['overview', 'users', 'experts', 'recipes'].map(tab => (
+          {['overview', 'users', 'experts'].map(tab => (
              <button 
                key={tab}
                onClick={() => setActiveTab(tab)}
                className={`px-4 py-2 rounded-lg text-sm font-bold capitalize whitespace-nowrap transition-colors ${activeTab === tab ? 'bg-white text-primary shadow' : 'text-stone-500 hover:text-stone-800'}`}
              >
-               {tab} {tab === 'recipes' && pendingRecipes.length > 0 ? `(${pendingRecipes.length})` : ''}
+               {tab}
              </button>
           ))}
         </div>
@@ -231,52 +205,9 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {activeTab === 'recipes' && (
-        <div className="bg-white rounded-3xl shadow-sm border border-stone-100 p-8 animate-fade-in-up">
-           <h3 className="text-xl font-bold text-stone-800 mb-6 flex items-center gap-3">
-             Recipes Awaiting Approval
-             <span className="bg-danger/10 text-danger font-bold text-xs px-2 py-1 rounded-full">{pendingRecipes.length}</span>
-           </h3>
-           
-           {pendingRecipes.length === 0 ? (
-             <p className="text-stone-500 text-center py-10">No recipes are pending approval.</p>
-           ) : (
-             <div className="grid md:grid-cols-2 gap-6">
-                {pendingRecipes.map(recipe => (
-                  <div key={recipe._id} className="p-6 bg-stone-50 rounded-2xl border border-stone-100 flex flex-col justify-between">
-                     <div>
-                       <div className="flex justify-between items-start mb-2">
-                         <span className="text-xs font-bold text-secondary uppercase tracking-wider bg-secondary/10 px-2 py-1 rounded">{recipe.milletType}</span>
-                       </div>
-                       <h4 className="font-bold text-lg text-stone-800 hover:text-primary cursor-pointer transition-colors" onClick={() => setSelectedRecipe(recipe)}>
-                         {recipe.title}
-                       </h4>
-                       <p className="text-xs text-stone-500 mb-4 mt-1">Submitted by: {recipe.createdBy?.name || 'Unknown'}</p>
-                     </div>
-                     <div className="flex gap-2 mt-4">
-                       <button 
-                         onClick={() => setSelectedRecipe(recipe)}
-                         className="flex-1 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-colors text-sm"
-                       >
-                         Review
-                       </button>
-                       <button 
-                         onClick={() => handleApproveRecipe(recipe._id)}
-                         className="flex-1 py-2 bg-primary text-white font-bold rounded-lg hover:bg-secondary transition-colors text-sm"
-                       >
-                         Approve
-                       </button>
-                     </div>
-                  </div>
-                ))}
-             </div>
-           )}
-        </div>
-      )}
-
       {/* Expert Modal */}
       {showExpertModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-scale-in">
               <div className="bg-stone-50 px-8 py-6 border-b border-stone-100 flex justify-between items-center">
                 <h3 className="text-xl font-bold text-stone-800">{editingExpert ? 'Edit Expert' : 'Add New Expert'}</h3>
@@ -350,10 +281,6 @@ const AdminDashboard = () => {
               </form>
            </div>
         </div>
-      )}
-
-      {selectedRecipe && (
-        <RecipeModal recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
       )}
     </div>
   );

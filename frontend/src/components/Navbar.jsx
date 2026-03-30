@@ -37,12 +37,13 @@ const Navbar = () => {
                 <Link to="/recipes" className="hover:text-primary transition-colors">Recipes</Link>
                 <Link to="/experts" className="hover:text-primary transition-colors">Experts</Link>
                 <Link to="/map" className="hover:text-primary transition-colors">Map</Link>
+                <Link to="/doctor-note" className="hover:text-primary transition-colors">Clinical Interpreter</Link>
               </>
             )}
 
             {isAuthenticated ? (
               <>
-                {role !== 'admin' && <Link to="/dashboard" className={navLink}>Dashboard</Link>}
+                {role === 'user' && <Link to="/dashboard" className={navLink}>Dashboard</Link>}
                 {role === 'expert' && (
                   <Link to="/expert-portal" className={navLink}>Expert Portal</Link>
                 )}
@@ -50,7 +51,7 @@ const Navbar = () => {
                   <Link to="/admin" className={navLink}>Admin</Link>
                 )}
                 <div className="flex items-center gap-3 ml-2 pl-4 border-l border-white/20">
-                  <span className="text-white/60 text-xs truncate max-w-[120px]">{user?.name || user?.email}</span>
+                <span className="text-stone-700 font-semibold text-xs truncate max-w-[120px]">{user?.name || user?.email}</span>
                   <button
                     onClick={handleLogout}
                     className="bg-accent text-primary font-bold px-4 py-2 rounded-lg hover:bg-yellow-400 transition-all text-sm"
@@ -97,6 +98,7 @@ const Navbar = () => {
             { to: '/recipes', label: 'Recipes' },
             { to: '/experts', label: 'Experts' },
             { to: '/map', label: 'Store Map' },
+            { to: '/doctor-note', label: 'Clinical Interpreter' },
           ].map(({ to, label }) => (
             <Link key={to} to={to} className={navLink} onClick={() => setMenuOpen(false)}>
               {label}
@@ -107,9 +109,11 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 {role !== 'admin' && (
-                  <Link to="/dashboard" className={`${navLink} block mb-3`} onClick={() => setMenuOpen(false)}>
-                    Dashboard
-                  </Link>
+                  role === 'user' && (
+                    <Link to="/dashboard" className={`${navLink} block mb-3`} onClick={() => setMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  )
                 )}
                 {role === 'expert' && (
                   <Link to="/expert-portal" className={`${navLink} block mb-3`} onClick={() => setMenuOpen(false)}>

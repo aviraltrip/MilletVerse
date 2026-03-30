@@ -1,4 +1,6 @@
 const Recipe = require('../models/Recipe');
+const cloudinary = require('../config/cloudinary');
+const { Readable } = require('stream');
 
 // @desc    Get all approved recipes
 // @route   GET /api/recipes
@@ -35,7 +37,40 @@ exports.getRecipeById = async (req, res) => {
 // @access  Private
 exports.createRecipe = async (req, res) => {
   try {
-    const { title, milletType, ingredients, steps, tags, cookTime, difficulty, healthLabels, nutritionalBreakdown, preparationNotes } = req.body;
+    const { title, milletType, ingredients, steps, tags, cookTime, difficulty, healthLabels, nutritionalBreakdown, preparationNotes, image } = req.body;
+
+    const parseMaybeJson = (value, fallback) => {
+      if (value === undefined || value === null || value === '') return fallback;
+      if (typeof value !== 'string') return value;
+      try {
+        return JSON.parse(value);
+      } catch {
+        return fallback;
+      }
+    };
+
+    const parsedIngredients = parseMaybeJson(ingredients, []);
+    const parsedSteps = parseMaybeJson(steps, []);
+    const parsedTags = parseMaybeJson(tags, []);
+    const parsedHealthLabels = parseMaybeJson(healthLabels, []);
+    const parsedNutritionalBreakdown = parseMaybeJson(nutritionalBreakdown, {});
+
+    // Optional image upload (multipart -> cloudinary)
+    let imageUrl = image;
+    if (req.file?.buffer) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'recipe_images', resource_type: 'image' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        Readable.from(req.file.buffer).pipe(uploadStream);
+      });
+
+      imageUrl = uploadResult?.secure_url;
+    }
     
     // Automatically set creator model based on role
     const creatorModel = req.user.role === 'expert' ? 'Expert' : 'User';
@@ -47,18 +82,19 @@ exports.createRecipe = async (req, res) => {
     const newRecipe = new Recipe({
       title,
       milletType,
-      ingredients,
-      steps,
-      tags,
-      cookTime,
+      ingredients: parsedIngredients,
+      steps: parsedSteps,
+      tags: parsedTags,
+      cookTime: Number(cookTime) || 0,
       difficulty,
-      healthLabels,
-      nutritionalBreakdown,
+      healthLabels: parsedHealthLabels,
+      nutritionalBreakdown: parsedNutritionalBreakdown,
       preparationNotes,
       createdBy: req.user.id,
       creatorModel,
       isExpertRecipe,
-      approvedStatus
+      approvedStatus,
+      image: imageUrl
     });
 
     const savedRecipe = await newRecipe.save();
