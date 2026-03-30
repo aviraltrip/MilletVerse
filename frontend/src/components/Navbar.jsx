@@ -50,7 +50,7 @@ const Navbar = () => {
                 {role === 'admin' && (
                   <Link to="/admin" className={navLink}>Admin</Link>
                 )}
-                <div className="flex items-center gap-3 ml-2 pl-4 border-l border-white/20">
+                <div className="flex items-center gap-3 ml-2 pl-4 border-l border-stone-200">
                 <span className="text-stone-700 font-semibold text-xs truncate max-w-[120px]">{user?.name || user?.email}</span>
                   <button
                     onClick={handleLogout}
@@ -79,9 +79,9 @@ const Navbar = () => {
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="Toggle menu"
           >
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-primary transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-primary transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-primary transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
       </div>
@@ -92,7 +92,7 @@ const Navbar = () => {
           menuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="bg-primary border-t border-white/10 px-4 py-4 flex flex-col gap-4 text-sm font-medium">
+        <div className="bg-primary text-white border-t border-white/10 px-4 py-4 flex flex-col gap-4 text-sm font-medium">
           {role !== 'admin' && [
             { to: '/encyclopedia', label: 'Encyclopedia' },
             { to: '/recipes', label: 'Recipes' },
