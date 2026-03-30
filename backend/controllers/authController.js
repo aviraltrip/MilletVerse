@@ -153,6 +153,6 @@ exports.refresh = (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie('refreshToken', { httpOnly: true });
+  res.clearCookie('refreshToken', { httpOnly: true, path: '/' });
   res.json({ success: true, message: 'Logged out successfully' });
 };

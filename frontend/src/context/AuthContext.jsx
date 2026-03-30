@@ -1,7 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { loginUser, registerUser, logoutUser } from '../api/auth';
-import api, { setAuthToken } from '../api/axiosInstance';
-import axios from 'axios';
+import { setAuthToken } from '../api/axiosInstance';
 
 const AuthContext = createContext();
 
@@ -10,31 +9,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Attempt to silently refresh token on load if logged in before
-    const bootstrapAuth = async () => {
-      try {
-        const res = await api.post('/auth/refresh');
-        const { accessToken } = res.data;
-        if (accessToken) {
-          setAuthToken(accessToken);
-          // Just set basic auth state - user profile fetched differently if req token info
-          // Since we need user details, typically the token has them or we decode it
-          const payload = JSON.parse(atob(accessToken.split('.')[1]));
-          setUser({ id: payload.id, role: payload.role });
-          setIsAuthenticated(true);
-        }
-      } catch (err) {
-        setIsAuthenticated(false);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    bootstrapAuth();
-  }, []);
+  const [loading, setLoading] = useState(false); // No async bootstrap, always starts ready
 
   const login = async (credentials) => {
     const data = await loginUser(credentials);
@@ -51,7 +26,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await logoutUser();
+    try {
+      await logoutUser();
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+    setAuthToken(null);
     setUser(null);
     setIsAuthenticated(false);
   };
