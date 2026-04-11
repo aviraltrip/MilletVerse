@@ -36,7 +36,7 @@ const ExpertDirectory = () => {
       ) : error ? (
         <div className="text-center text-danger py-10 bg-danger/5 rounded-xl border border-danger/20">{error}</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="responsive-grid grid-large gap-8">
           {experts.map(expert => (
             <div key={expert._id} className="bg-white rounded-2xl border border-stone-100 p-8 shadow-sm hover:shadow-xl transition-all group hover:-translate-y-1">
               <div className="w-20 h-20 bg-secondary/10 text-secondary rounded-full flex items-center justify-center text-3xl font-heading font-bold mb-6 group-hover:bg-secondary group-hover:text-white transition-colors">

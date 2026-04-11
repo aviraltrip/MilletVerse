@@ -86,3 +86,60 @@ a, button {
   -webkit-backdrop-filter: blur(12px);
 }
 
+/* ==========================================================================
+   Custom Vanilla CSS Responsive Layout System
+   ========================================================================== */
+
+/* 1. Fluid Responsive Grid Base */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* Base tablet structure */
+@media (min-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Large desktop structure */
+@media (min-width: 1024px) {
+  .responsive-grid.grid-large {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .responsive-grid.grid-xl {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 2. Mobile-Specific Adjustments (<768px) */
+@media (max-width: 767px) {
+  /* Force flex stacking on mobile instead of row layout */
+  .mobile-stack {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Add subtle negative margins for full-bleed effects on mobile if needed */
+  .mobile-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0 !important;
+  }
+
+  /* Typography scale down for mobile */
+  html {
+    font-size: 14px;
+  }
+}
+
+/* 3. Touch Device Interaction Fixes */
+@media (hover: none) and (pointer: coarse) {
+  /* Prevents "sticky hover" on mobile tap */
+  a:hover, button:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

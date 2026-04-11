@@ -61,7 +61,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="responsive-grid grid-large gap-8">
         
         {/* Main Content Area */}
         <div className="md:col-span-2 space-y-8">

@@ -136,7 +136,7 @@ const AdminDashboard = () => {
       </div>
 
       {activeTab === 'overview' && stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-fade-in-up">
+        <div className="responsive-grid grid-xl gap-6 animate-fade-in-up">
            <MetricCard title="Total Users" value={stats.metrics.totalUsers} icon="👥" />
            <MetricCard title="Total Experts" value={stats.metrics.totalExperts} icon="👨‍⚕️" />
            <MetricCard title="Total Recipes" value={stats.metrics.totalRecipes} icon="🍲" />
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
              </button>
            </div>
            
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           <div className="responsive-grid grid-large gap-6">
              {experts.map(expert => (
                <div key={expert._id} className="bg-stone-50 border border-stone-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
                  <div className="flex justify-between items-start mb-4">

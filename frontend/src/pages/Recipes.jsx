@@ -65,7 +65,7 @@ const Recipes = () => {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 mb-12">
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="responsive-grid grid-large gap-6">
           <div>
             <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-2">Search</label>
             <input 
@@ -112,7 +112,7 @@ const Recipes = () => {
           {error}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="responsive-grid grid-large gap-8">
           {filteredRecipes.map((recipe) => (
             <div 
               key={recipe._id} 
