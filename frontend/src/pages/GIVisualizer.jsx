@@ -133,7 +133,7 @@ const GIVisualizer = () => {
                 </div>
                 
                 {g1 && (
-                  <div className="pt-4 mt-4 border-t border-stone-100 grid grid-cols-2 gap-4">
+                  <div className="pt-4 mt-4 border-t border-stone-100 responsive-grid gap-4">
                      <div>
                         <span className="block text-[10px] text-stone-400 uppercase font-bold tracking-wider mb-1">GI Level</span>
                         <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ const GIVisualizer = () => {
                 </div>
                 
                 {g2 && (
-                  <div className="pt-4 mt-4 border-t border-stone-100 grid grid-cols-2 gap-4">
+                  <div className="pt-4 mt-4 border-t border-stone-100 responsive-grid gap-4">
                      <div>
                         <span className="block text-[10px] text-stone-400 uppercase font-bold tracking-wider mb-1">GI Level</span>
                         <div className="flex items-center gap-2">
@@ -261,7 +261,7 @@ const GIVisualizer = () => {
 
            <div className="bg-cream/50 rounded-3xl p-8 border border-earth/10">
              <h4 className="font-bold text-primary mb-3">Understanding the Metrics</h4>
-             <div className="grid md:grid-cols-2 gap-6 text-sm text-stone-700 leading-relaxed">
+             <div className="responsive-grid gap-6 text-sm text-stone-700 leading-relaxed">
                 <div>
                   <strong className="block text-stone-800 mb-1">Glycemic Index (GI)</strong>
                   Measures how quickly a food causes blood sugar levels to rise. A GI of 55 or less is considered low. Millets generally have a low to medium GI compared to refined grains.

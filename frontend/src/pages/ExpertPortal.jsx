@@ -161,7 +161,7 @@ const ExpertPortal = () => {
           )}
           
           <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="responsive-grid gap-8">
               {/* Basic Info */}
               <div className="space-y-6">
                 <h3 className="text-lg font-bold text-stone-800 border-b border-stone-100 pb-2">Basic Info</h3>
@@ -169,7 +169,7 @@ const ExpertPortal = () => {
                   <label className="block text-sm font-bold text-stone-600 mb-2">Recipe Title *</label>
                   <input required name="title" value={formData.title} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-secondary outline-none transition-all" placeholder="e.g. Sprouted Ragi Dosa" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="responsive-grid gap-4">
                   <div>
                     <label className="block text-sm font-bold text-stone-600 mb-2">Millet Type *</label>
                     <select required name="milletType" value={formData.milletType} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-secondary outline-none transition-all bg-white">
@@ -240,12 +240,12 @@ const ExpertPortal = () => {
 
             <div className="space-y-6 pt-6 border-t border-stone-100">
               <h3 className="text-lg font-bold text-stone-800 border-b border-stone-100 pb-2">Health & Nutrition</h3>
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="responsive-grid gap-8">
                 <div>
                   <label className="block text-sm font-bold text-stone-600 mb-2">Therapeutic Labels (comma-separated)</label>
                   <input name="healthLabelsText" value={formData.healthLabelsText} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-secondary outline-none transition-all" placeholder="e.g. diabetes-friendly, iron-rich" />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="responsive-grid grid-large gap-4">
                   <div>
                     <label className="block text-xs font-bold text-stone-500 mb-1">Calories</label>
                     <input name="calories" value={formData.calories} onChange={handleChange} type="number" className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-secondary outline-none" />
@@ -292,7 +292,7 @@ const ExpertPortal = () => {
                 <button onClick={() => setActiveTab('submit')} className="px-6 py-2 bg-secondary/10 text-secondary font-bold rounded-full hover:bg-secondary/20 transition-colors">Start Creating</button>
              </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="responsive-grid grid-large gap-6">
               {myRecipes.map((recipe) => (
                 <div key={recipe._id} onClick={() => setSelectedRecipe(recipe)} className="bg-white rounded-xl shadow-sm hover:shadow-md border border-stone-100 p-6 cursor-pointer transition-all hover:-translate-y-1">
                   <div className="flex justify-between items-start mb-4">

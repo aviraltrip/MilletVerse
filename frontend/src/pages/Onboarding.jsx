@@ -114,7 +114,7 @@ const Onboarding = () => {
       {step === 3 && (
         <div className="space-y-4">
           <h3 className="text-xl font-bold">Health Conditions</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="responsive-grid gap-3">
             {conditionsList.map(cond => (
               <label key={cond} className="flex items-center space-x-2 p-2 border rounded cursor-pointer hover:bg-cream">
                 <input type="checkbox" checked={formData.conditions.includes(cond)} onChange={() => toggleCondition(cond)} className="form-checkbox text-primary" />

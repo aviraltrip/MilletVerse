@@ -141,7 +141,7 @@ const AiRecipeGenerator = () => {
                      {generatedRecipe.preparationNotes || "A delicious, custom-tailored recipe crafted just for you using the power of ancient grains."}
                    </p>
                    
-                   <div className="grid grid-cols-2 gap-3 mb-4">
+                   <div className="responsive-grid gap-3 mb-4">
                       <div className="bg-stone-50 p-3 rounded-lg"><span className="block text-[10px] text-stone-400 uppercase">Calories</span><span className="font-bold text-stone-700">{generatedRecipe.nutritionalBreakdown?.calories}</span></div>
                       <div className="bg-stone-50 p-3 rounded-lg"><span className="block text-[10px] text-stone-400 uppercase">Protein</span><span className="font-bold text-stone-700">{generatedRecipe.nutritionalBreakdown?.protein}g</span></div>
                    </div>

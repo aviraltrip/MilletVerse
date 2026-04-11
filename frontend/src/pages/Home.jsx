@@ -70,7 +70,7 @@ const Home = () => {
   return (
     <div className="bg-cream min-h-screen font-body text-stone-800">
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 grid md:grid-cols-2 gap-16 items-center">
+      <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 responsive-grid gap-16 items-center">
         <div className="space-y-8 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 px-3 py-1 rounded-full text-secondary text-xs font-bold uppercase tracking-wider">
             <span>🌿</span> Condition-Specific Dietary Intelligence
@@ -129,7 +129,7 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="responsive-grid grid-large gap-8">
             {engines.map((e, idx) => (
               <div key={idx} className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm hover:shadow-lg transition-all hover:border-secondary group">
                 <div className="w-12 h-12 bg-secondary/5 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:bg-secondary/10 transition-colors">
@@ -148,7 +148,7 @@ const Home = () => {
       </section>
 
       {/* Grains Decoded Section */}
-      <section className="max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-20 items-center">
+      <section className="max-w-7xl mx-auto px-6 py-24 responsive-grid gap-20 items-center">
         <div className="order-2 lg:order-1">
           <div className="rounded-3xl overflow-hidden shadow-xl border border-stone-100">
             <img src="/assets/varieties.png" alt="Millet Varieties" className="w-full h-auto" />
@@ -231,7 +231,7 @@ const Home = () => {
             <p className="text-white/60 text-lg">Your path to clinically guided millet nutrition in four steps.</p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="responsive-grid grid-xl gap-12">
             {steps.map((s, idx) => (
               <div key={idx} className="space-y-6">
                 <span className="text-5xl font-heading font-bold text-white/10 block leading-none">{s.num}</span>
@@ -245,7 +245,7 @@ const Home = () => {
 
       {/* Footer */}
       <footer className="bg-white py-20 border-t border-stone-100 text-sm">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-16">
+        <div className="max-w-7xl mx-auto px-6 responsive-grid grid-large gap-16">
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">M</div>
@@ -256,7 +256,7 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-2 gap-8 md:col-span-2 capitalize">
+          <div className="responsive-grid gap-8 md:col-span-2 capitalize">
             <div className="space-y-4">
               <p className="font-bold text-stone-900">Platform</p>
               <ul className="space-y-2 text-stone-500 hover:[&>li]:text-primary transition-colors">

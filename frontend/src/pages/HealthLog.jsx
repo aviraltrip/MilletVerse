@@ -118,7 +118,7 @@ const HealthLog = () => {
                   </select>
                </div>
 
-               <div className="grid grid-cols-2 gap-4">
+               <div className="responsive-grid gap-4">
                   <div>
                     <label className="block text-sm font-bold text-stone-600 mb-2">Weight (kg)</label>
                     <input type="number" name="weight" step="0.1" value={formData.weight} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-secondary outline-none transition-all" placeholder="e.g. 70.5" />
