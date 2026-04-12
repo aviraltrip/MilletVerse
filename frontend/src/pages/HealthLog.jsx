@@ -12,7 +12,6 @@ const HealthLog = () => {
   const [error, setError] = useState(null);
   const [submitStatus, setSubmitStatus] = useState('');
 
-  // Form State
   const [formData, setFormData] = useState({
     energyLevel: 5,
     digestion: 'good',
@@ -64,7 +63,6 @@ const HealthLog = () => {
     }
   };
 
-  // Format data for Recharts
   const chartData = logs.map(log => {
     const d = new Date(log.date);
     return {

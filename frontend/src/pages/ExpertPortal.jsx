@@ -3,14 +3,13 @@ import api from '../api/axiosInstance';
 import RecipeModal from '../components/RecipeModal';
 
 const ExpertPortal = () => {
-  const [activeTab, setActiveTab] = useState('submit'); // 'submit' or 'my-recipes'
+  const [activeTab, setActiveTab] = useState('submit'); 
   const [myRecipes, setMyRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [recipeImageFile, setRecipeImageFile] = useState(null);
   const [imageInputKey, setImageInputKey] = useState(0);
 
-  // Form State
   const [formData, setFormData] = useState({
     title: '',
     milletType: 'Finger Millet',
@@ -56,7 +55,6 @@ const ExpertPortal = () => {
     setSubmitStatus({ status: 'loading', message: 'Submitting recipe...' });
     
     try {
-      // Parse multi-line and comma-separated text into arrays
       const ingredients = formData.ingredientsText.split('\n').filter(i => i.trim() !== '').map(line => {
         const parts = line.split('-');
         return { 
@@ -87,7 +85,7 @@ const ExpertPortal = () => {
         preparationNotes: formData.preparationNotes
       };
 
-      // Send multipart/form-data so experts can attach a recipe image.
+      
       const fd = new FormData();
       fd.append('title', recipeData.title);
       fd.append('milletType', recipeData.milletType);
@@ -106,7 +104,7 @@ const ExpertPortal = () => {
       await api.post('/recipes', fd);
       setSubmitStatus({ status: 'success', message: 'Recipe successfully submitted and published!' });
       
-      // Reset form
+      
       setFormData({
         title: '', milletType: 'Finger Millet', ingredientsText: '', stepsText: '', tagsText: '', 
         cookTime: '', difficulty: 'medium', healthLabelsText: '', calories: '', protein: '', carbs: '', fiber: '', preparationNotes: ''
@@ -114,7 +112,7 @@ const ExpertPortal = () => {
       setRecipeImageFile(null);
       setImageInputKey((k) => k + 1);
       
-      // Hide success message after 3 seconds
+      
       setTimeout(() => setSubmitStatus({ status: '', message: '' }), 3000);
 
     } catch (error) {

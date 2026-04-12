@@ -24,7 +24,6 @@ const Dashboard = () => {
         const data = await getMyPrescriptions();
         setPrescriptions(data.prescriptions || []);
         if (data.prescriptions.length === 0) {
-          // No prescription found -> go to onboarding
           navigate('/onboarding');
         }
       } catch (err) {

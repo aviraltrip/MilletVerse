@@ -9,7 +9,6 @@ const Recipes = () => {
   const [error, setError] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   
-  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [milletFilter, setMilletFilter] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('');

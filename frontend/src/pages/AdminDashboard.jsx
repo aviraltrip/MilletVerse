@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, users, experts
+  const [activeTab, setActiveTab] = useState('overview'); 
   const [stats, setStats] = useState(null);
   const [experts, setExperts] = useState([]);
   const [users, setUsers] = useState([]);
@@ -96,7 +96,7 @@ const AdminDashboard = () => {
     setExpertFormData({
       name: expert.name,
       email: expert.email,
-      password: '', // Don't show password
+      password: '', 
       specialty: expert.specialty,
       credentials: expert.credentials,
       bio: expert.bio

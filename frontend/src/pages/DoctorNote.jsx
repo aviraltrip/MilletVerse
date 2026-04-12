@@ -36,11 +36,6 @@ const DoctorNote = () => {
   };
 
   const generatePrescription = async (conditions) => {
-     // Navigate to onboarding with preset conditions to generate prescription
-     // or generate prescription right away by passing conditions to backend.
-     // For now, we assume the dashboard automatically shows prescription based on user health profile.
-     // So we could update the user's health profile and go to dashboard.
-     // Wait, the API might not support updating user profile easily here yet, but let's navigate to dashboard and store conditions in localStorage for Onboarding to pick up.
      
      localStorage.setItem('ai_suggested_conditions', JSON.stringify(conditions));
      navigate('/onboarding');

@@ -9,7 +9,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false); // No async bootstrap, always starts ready
+  const [loading, setLoading] = useState(false); 
 
   const login = async (credentials) => {
     const data = await loginUser(credentials);

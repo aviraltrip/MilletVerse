@@ -131,7 +131,6 @@ const Register = () => {
               />
             </div>
 
-            {/* Role selector removed - only users can signup */}
             <input type="hidden" name="role" value="user" />
 
             <button

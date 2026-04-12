@@ -11,7 +11,7 @@ const AiRecipeGenerator = () => {
   const [error, setError] = useState(null);
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(''); // 'saved' | 'error' | ''
+  const [saveStatus, setSaveStatus] = useState(''); 
   const { role } = useAuth();
   const navigate = useNavigate();
 

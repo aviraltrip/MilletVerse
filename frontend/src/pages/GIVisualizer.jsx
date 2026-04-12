@@ -12,7 +12,6 @@ const GIVisualizer = () => {
   const [millets, setMillets] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Calculator State
   const [selectedGrain1, setSelectedGrain1] = useState('');
   const [portion1, setPortion1] = useState(100);
   
@@ -53,9 +52,9 @@ const GIVisualizer = () => {
   };
 
   const getGlLevelInfo = (gl) => {
-    if (gl <= 10) return { label: 'Low', color: '#40916C' }; // secondary
-    if (gl <= 19) return { label: 'Medium', color: '#D4A017' }; // accent
-    return { label: 'High', color: '#E63946' }; // danger
+    if (gl <= 10) return { label: 'Low', color: '#40916C' }; 
+    if (gl <= 19) return { label: 'Medium', color: '#D4A017' }; 
+    return { label: 'High', color: '#E63946' }; 
   };
 
   const getGiLevelInfo = (gi) => {
@@ -64,7 +63,6 @@ const GIVisualizer = () => {
     return { label: 'High', color: '#E63946' };
   };
 
-  // Prepare chart data
   const chartData = [
     {
       name: selectedGrain1,

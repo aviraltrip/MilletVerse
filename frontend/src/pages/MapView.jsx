@@ -5,7 +5,6 @@ import L from 'leaflet';
 import { hubliStores, haversineDistance } from '../data/hubliStores';
 import { cultivationStates } from '../data/milletCultivationStates';
 
-// Fix Leaflet's default icon issue in React
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -13,7 +12,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// A component to dynamically change map view when mode switches
 const ChangeView = ({ center, zoom }) => {
   const map = useMap();
   map.setView(center, zoom);
@@ -21,7 +19,7 @@ const ChangeView = ({ center, zoom }) => {
 };
 
 const MapView = () => {
-  const [mode, setMode] = useState('stores'); // 'stores' or 'cultivation'
+  const [mode, setMode] = useState('stores');
   const [userLocation, setUserLocation] = useState(null);
   const [stores, setStores] = useState(hubliStores);
 
@@ -29,14 +27,12 @@ const MapView = () => {
   const indiaCenter = [20.5937, 78.9629];
 
   useEffect(() => {
-    // Try to get user's actual location if mode is stores
     if (mode === 'stores' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation([latitude, longitude]);
           
-          // Sort stores by distance
           const sortedStores = [...hubliStores].map(store => {
             const distance = haversineDistance(latitude, longitude, store.lat, store.lng);
             return { ...store, distance };
@@ -95,7 +91,7 @@ const MapView = () => {
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
                 url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                // A clean, bright tileset from Carto
+                
               />
 
               {mode === 'stores' && stores.map(store => (
