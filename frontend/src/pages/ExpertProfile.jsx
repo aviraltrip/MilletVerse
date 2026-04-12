@@ -45,7 +45,7 @@ const ExpertProfile = () => {
         Back to Experts
       </Link>
 
-      <div className="grid lg:grid-cols-3 gap-12">
+      <div className="responsive-grid grid-large gap-12">
         {/* Profile Sidebar */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-3xl p-8 border border-stone-100 shadow-sm sticky top-8 text-center">
@@ -79,7 +79,7 @@ const ExpertProfile = () => {
                This expert hasn't published any recipes yet.
              </div>
            ) : (
-             <div className="grid sm:grid-cols-2 gap-6">
+             <div className="responsive-grid gap-6">
                {recipes.map(recipe => (
                  <div 
                    key={recipe._id} 
