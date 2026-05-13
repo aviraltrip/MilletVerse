@@ -1,0 +1,26 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="browntopGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A0522D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#704214;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#browntopGradient)"/>
+  <g transform="translate(100, 100)">
+    <circle cx="-22" cy="-26" r="4" fill="#DEB887"/>
+    <circle cx="-14" cy="-34" r="4" fill="#D2B48C"/>
+    <circle cx="-6" cy="-30" r="4" fill="#DEB887"/>
+    <circle cx="2" cy="-36" r="4" fill="#D2B48C"/>
+    <circle cx="10" cy="-32" r="4" fill="#DEB887"/>
+    <circle cx="18" cy="-36" r="4" fill="#D2B48C"/>
+    <circle cx="24" cy="-28" r="4" fill="#DEB887"/>
+    <rect x="-21" y="-22" width="2" height="28" fill="#CD853F" rx="1"/>
+    <rect x="-13" y="-30" width="2" height="35" fill="#CD853F" rx="1"/>
+    <rect x="-5" y="-26" width="2" height="31" fill="#CD853F" rx="1"/>
+    <rect x="3" y="-32" width="2" height="37" fill="#CD853F" rx="1"/>
+    <rect x="11" y="-28" width="2" height="33" fill="#CD853F" rx="1"/>
+    <rect x="19" y="-32" width="2" height="37" fill="#CD853F" rx="1"/>
+    <rect x="25" y="-24" width="2" height="29" fill="#CD853F" rx="1"/>
+  </g>
+  <text x="100" y="180" font-size="14" font-weight="bold" fill="white" text-anchor="middle">Browntop Millet</text>
+</svg>

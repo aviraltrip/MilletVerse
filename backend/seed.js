@@ -20,7 +20,7 @@ const milletsData = [
     states: ["Karnataka", "Tamil Nadu", "Uttarakhand"],
     season: "Aug-Oct",
     forms: ["porridge", "flour", "whole grain", "sprouts", "flakes"],
-    image: "/assets/ragi.png",
+    image: "https://images.unsplash.com/photo-1585518419759-8e2885c770da?w=500&q=80",
     benefits: ["Bone health", "Anti-aging", "Diabetic friendly"],
     cautions: ["High intake may not suit kidney stone patients due to oxalates"]
   },
@@ -33,7 +33,7 @@ const milletsData = [
     states: ["Rajasthan", "Gujarat", "Maharashtra", "Karnataka"],
     season: "Sep-Nov",
     forms: ["flour", "whole grain", "flakes"],
-    image: "/assets/bajra.png",
+    image: "https://images.unsplash.com/photo-1574080532676-36ff46ef2d84?w=500&q=80",
     benefits: ["Heart health", "Relieves constipation", "Energy booster"],
     cautions: []
   },
@@ -46,7 +46,7 @@ const milletsData = [
     states: ["Andhra Pradesh", "Karnataka", "Tamil Nadu"],
     season: "Sep-Dec",
     forms: ["whole grain", "flour"],
-    image: "/assets/foxtail.png",
+    image: "https://images.unsplash.com/photo-1560886088-b90b77e7ab21?w=500&q=80",
     benefits: ["Regulates blood sugar", "Hormonal balance", "Nervous system health"],
     cautions: []
   },
@@ -59,7 +59,7 @@ const milletsData = [
     states: ["Maharashtra", "Karnataka", "Rajasthan", "Gujarat"],
     season: "Oct-Dec",
     forms: ["flour", "flakes", "whole grain"],
-    image: "/assets/jowar.png",
+    image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500&q=80",
     benefits: ["Digestive health", "Immunity", "Gluten-free"],
     cautions: ["Consume in moderation for thyroid issues"]
   },
@@ -72,7 +72,7 @@ const milletsData = [
     states: ["Uttarakhand", "Tamil Nadu"],
     season: "Sep-Nov",
     forms: ["whole grain", "flour"],
-    image: "/assets/hero.png",
+    image: "https://images.unsplash.com/photo-1584634224102-4a5f7f51c4b4?w=500&q=80",
     benefits: ["Weight management", "Low calorie", "Low GI"],
     cautions: []
   },
@@ -85,7 +85,7 @@ const milletsData = [
     states: ["Madhya Pradesh", "Bihar", "Tamil Nadu"],
     season: "Aug-Oct",
     forms: ["whole grain", "flakes"],
-    image: "/assets/varieties.png",
+    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80",
     benefits: ["Detoxification", "Thyroid health", "Rapid digestion"],
     cautions: []
   },
@@ -98,7 +98,7 @@ const milletsData = [
     states: ["Madhya Pradesh", "Andhra Pradesh", "Bihar"],
     season: "Oct-Nov",
     forms: ["whole grain"],
-    image: "/assets/ragi.png",
+    image: "https://images.unsplash.com/photo-1478519143212-ba901e749a6f?w=500&q=80",
     benefits: ["Heals wounds", "Blood purifier", "Anti-diabetic"],
     cautions: []
   },
@@ -111,7 +111,7 @@ const milletsData = [
     states: ["Karnataka", "Andhra Pradesh"],
     season: "Aug-Oct",
     forms: ["whole grain"],
-    image: "/assets/bajra.png",
+    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80",
     benefits: ["Resolves GI issues", "Rich in iron", "Gluten free"],
     cautions: []
   }
@@ -270,7 +270,7 @@ const seedDatabase = async () => {
         creatorModel: 'Expert',
         isExpertRecipe: true,
         approvedStatus: true,
-        image: "/assets/hero.png",
+        image: "https://images.unsplash.com/photo-1609501676725-7186f017a4b1?w=500&q=80",
         preparationNotes: "Ferment for 2 hours for best crunch."
       },
       {
@@ -291,7 +291,7 @@ const seedDatabase = async () => {
         creatorModel: 'Expert',
         isExpertRecipe: true,
         approvedStatus: true,
-        image: "/assets/varieties.png",
+        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80",
         preparationNotes: "Do not overcook to avoid mushiness."
       }
     ]);

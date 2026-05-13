@@ -1,0 +1,26 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="jowarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#jowarGradient)"/>
+  <g transform="translate(100, 100)">
+    <circle cx="-15" cy="-30" r="3" fill="#DAA520"/>
+    <circle cx="-12" cy="-24" r="3" fill="#DAA520"/>
+    <circle cx="-9" cy="-28" r="3" fill="#DAA520"/>
+    <circle cx="-6" cy="-22" r="3" fill="#DAA520"/>
+    <circle cx="-3" cy="-30" r="3" fill="#DAA520"/>
+    <circle cx="0" cy="-24" r="3" fill="#DAA520"/>
+    <circle cx="3" cy="-28" r="3" fill="#DAA520"/>
+    <circle cx="6" cy="-22" r="3" fill="#DAA520"/>
+    <circle cx="9" cy="-30" r="3" fill="#DAA520"/>
+    <circle cx="12" cy="-24" r="3" fill="#DAA520"/>
+    <circle cx="15" cy="-28" r="3" fill="#DAA520"/>
+    <path d="M -15 -30 Q -5 -15 5 -25" stroke="#DAA520" stroke-width="1" fill="none" opacity="0.5"/>
+    <path d="M 0 -24 Q 5 -10 8 -20" stroke="#DAA520" stroke-width="1" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="20" rx="25" ry="15" fill="#FFD700" opacity="0.3"/>
+  </g>
+  <text x="100" y="180" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Sorghum</text>
+</svg>
