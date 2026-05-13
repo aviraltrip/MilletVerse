@@ -72,7 +72,7 @@ const milletsData = [
     states: ["Uttarakhand", "Tamil Nadu"],
     season: "Sep-Nov",
     forms: ["whole grain", "flour"],
-    image: "/assets/varieties.png",
+    image: "/assets/hero.png",
     benefits: ["Weight management", "Low calorie", "Low GI"],
     cautions: []
   },
@@ -98,7 +98,7 @@ const milletsData = [
     states: ["Madhya Pradesh", "Andhra Pradesh", "Bihar"],
     season: "Oct-Nov",
     forms: ["whole grain"],
-    image: "/assets/varieties.png",
+    image: "/assets/ragi.png",
     benefits: ["Heals wounds", "Blood purifier", "Anti-diabetic"],
     cautions: []
   },
@@ -111,7 +111,7 @@ const milletsData = [
     states: ["Karnataka", "Andhra Pradesh"],
     season: "Aug-Oct",
     forms: ["whole grain"],
-    image: "/assets/hero.png",
+    image: "/assets/bajra.png",
     benefits: ["Resolves GI issues", "Rich in iron", "Gluten free"],
     cautions: []
   }

@@ -37,7 +37,6 @@ const Navbar = () => {
                 <Link to="/recipes" className="hover:text-primary transition-colors">Recipes</Link>
                 <Link to="/experts" className="hover:text-primary transition-colors">Experts</Link>
                 <Link to="/map" className="hover:text-primary transition-colors">Map</Link>
-                <Link to="/doctor-note" className="hover:text-primary transition-colors">Clinical Interpreter</Link>
               </>
             )}
 
@@ -98,7 +97,6 @@ const Navbar = () => {
             { to: '/recipes', label: 'Recipes' },
             { to: '/experts', label: 'Experts' },
             { to: '/map', label: 'Store Map' },
-            { to: '/doctor-note', label: 'Clinical Interpreter' },
           ].map(({ to, label }) => (
             <Link key={to} to={to} className={navLink} onClick={() => setMenuOpen(false)}>
               {label}
