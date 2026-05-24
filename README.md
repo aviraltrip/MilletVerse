@@ -106,7 +106,8 @@ MilletVerse is optimized for a decoupled deployment: **Backend on Render** and *
    - `JWT_SECRET` & `JWT_REFRESH_SECRET`: Secure random strings.
    - `ADMIN_EMAIL` & `ADMIN_PASSWORD`: Your initial admin credentials.
    - `ALLOWED_ORIGINS`: Your Vercel frontend URL (e.g., `https://millet-verse-ui.vercel.app`).
-   - `CLOUDINARY_URL` / `OPENROUTER_API_KEY`: (Optional) For images and AI.
+   - `OPENROUTER_API_KEY`: **Required** for AI features (note analysis, recipes, summaries). Get a key at [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+   - `CLOUDINARY_URL`: (Optional) For recipe image uploads.
 2. **Build Settings**:
    - **Root Directory**: `backend`
    - **Build Command**: `npm install`

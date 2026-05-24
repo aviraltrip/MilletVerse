@@ -37,7 +37,9 @@ async function generateText(prompt, options = {}) {
     body: JSON.stringify({
       model,
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: Number(process.env.OPENROUTER_MAX_TOKENS) || 4096,
+      max_tokens:
+        options.maxTokens ??
+        (Number(process.env.OPENROUTER_MAX_TOKENS) || 4096),
     }),
   });
 
@@ -87,7 +89,8 @@ function formatOpenRouterError(error) {
 }
 
 function isAiConfigured() {
-  return Boolean(process.env.OPENROUTER_API_KEY);
+  const key = process.env.OPENROUTER_API_KEY;
+  return Boolean(key && String(key).trim());
 }
 
 module.exports = {

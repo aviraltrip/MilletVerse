@@ -85,7 +85,8 @@ const PrescriptionCard = ({ prescription, userProfile }) => {
         }
       } catch (err) {
         console.error(err);
-        setError('Failed to fetch AI summary. Please check your connection.');
+        const msg = err.response?.data?.message;
+        setError(msg || 'Failed to fetch AI summary. Please try again.');
       } finally {
         setLoading(false);
       }

@@ -8,6 +8,7 @@ const DoctorNote = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+  const [aiReady, setAiReady] = useState(true);
   
   const navigate = useNavigate();
   const { role } = useAuth();
@@ -17,6 +18,12 @@ const DoctorNote = () => {
       navigate('/expert-portal', { replace: true });
     }
   }, [role, navigate]);
+
+  useEffect(() => {
+    api.get('/ai/status')
+      .then((res) => setAiReady(Boolean(res.data?.configured)))
+      .catch(() => setAiReady(false));
+  }, []);
 
   const handleAnalyze = async () => {
     if (!noteText.trim()) return;
@@ -99,6 +106,12 @@ const DoctorNote = () => {
           </button>
         </div>
       </div>
+
+      {!aiReady && (
+        <div className="mt-8 p-6 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl text-center text-sm animate-fade-in">
+          AI is not configured on the server. If you use the live site, add <code className="font-mono">OPENROUTER_API_KEY</code> in your Render dashboard and redeploy the backend.
+        </div>
+      )}
 
       {error && (
         <div className="mt-8 p-6 bg-danger/5 border border-danger/20 text-danger rounded-2xl text-center font-medium animate-fade-in">

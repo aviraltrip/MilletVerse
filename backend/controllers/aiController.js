@@ -1,12 +1,14 @@
 const User = require('../models/User');
 const Prescription = require('../models/Prescription');
-const HealthMapping = require('../models/HealthMapping');
-const Millet = require('../models/Millet');
 const {
   generateText,
   formatOpenRouterError,
   isAiConfigured,
 } = require('../services/openRouterService');
+const {
+  parseConditionsFromAi,
+  parseJsonObjectFromAi,
+} = require('../services/aiResponseParser');
 
 function aiNotConfiguredResponse(res, useSuccessFlag = false) {
   console.error('FATAL: OPENROUTER_API_KEY not configured');
@@ -40,13 +42,8 @@ Return a JSON array of strings. ONLY RETURN THE JSON ARRAY, NO OTHER TEXT OR MAR
 Example output: ["diabetes", "hypertension"]`;
 
     console.log('Calling OpenRouter for note interpretation...');
-    let rawText = await generateText(prompt);
-    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-    const conditions = JSON.parse(rawText);
-    if (!Array.isArray(conditions)) {
-      throw new Error('AI returned an unexpected format. Please try again.');
-    }
+    const rawText = await generateText(prompt, { maxTokens: 512 });
+    const conditions = parseConditionsFromAi(rawText);
 
     res.status(200).json({ conditions });
   } catch (error) {
@@ -92,10 +89,8 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
 }`;
 
     console.log('Calling OpenRouter for recipe generation...');
-    let rawText = await generateText(prompt);
-    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-    const recipeObj = JSON.parse(rawText);
+    const rawText = await generateText(prompt);
+    const recipeObj = parseJsonObjectFromAi(rawText);
 
     res.status(200).json(recipeObj);
   } catch (error) {
@@ -107,7 +102,7 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
   }
 };
 
-// @desc    Generate empathetic RAG summary for the user's active prescription
+// @desc    Generate empathetic AI summary for the user's active prescription
 // @route   GET /api/ai/prescription-summary
 // @access  Private
 exports.generatePrescriptionSummary = async (req, res) => {
@@ -132,74 +127,42 @@ exports.generatePrescriptionSummary = async (req, res) => {
     }
 
     const healthProfile = user.healthProfile || {};
-    const conditions = healthProfile.conditions || [];
+    const conditions = (healthProfile.conditions || []).join(', ') || 'general wellness';
+    const planLines = prescription.items
+      .map(
+        (item, i) =>
+          `${i + 1}. ${item.millet} — ${item.quantity}, ${item.form}, ${item.timing}. Reason: ${item.rationale || 'as prescribed'}`
+      )
+      .join('\n');
 
-    const healthMappings = await HealthMapping.find({ condition: { $in: conditions } });
-    const millets = await Millet.find({});
+    const prompt = `You are a warm, empathetic clinical nutritionist explaining a personalized millet diet plan.
 
-    const ragContext = {
-      patientProfile: {
-        age: healthProfile.age,
-        weight: healthProfile.weight,
-        height: healthProfile.height,
-        bmi: healthProfile.bmi,
-        bmiCategory: healthProfile.bmiCategory,
-        conditions: conditions,
-        labValues: healthProfile.labValues || {},
-      },
-      prescription: {
-        generatedDate: prescription.generatedDate,
-        version: prescription.version,
-        items: prescription.items.map((item) => ({
-          milletName: item.millet,
-          quantity: item.quantity,
-          form: item.form,
-          timing: item.timing,
-          rationale: item.rationale,
-        })),
-      },
-      clinicalGuidelines: healthMappings.map((mapping) => ({
-        condition: mapping.condition,
-        recommendedMillets: mapping.recommendedMillets,
-        avoidMillets: mapping.avoidMillets,
-        timingGuidelines: mapping.timing,
-        rationale: mapping.rationale,
-      })),
-      milletReferenceData: millets.map((m) => ({
-        name: m.name,
-        localNames: m.localNames,
-        nutrients: m.nutrients,
-        benefits: m.benefits,
-        cautions: m.cautions,
-      })),
-    };
+Patient profile:
+- Conditions: ${conditions}
+- Age: ${healthProfile.age ?? 'not specified'}
+- BMI: ${healthProfile.bmi ?? 'not specified'} (${healthProfile.bmiCategory || 'n/a'})
 
-    const prompt = `You are a clinical nutritionist and empathetic health guide. You are explaining a personalized millet diet plan to a patient.
+Prescribed plan:
+${planLines}
 
-Below is the patient's structured health profile and their prescribed millet plan in JSON format:
-${JSON.stringify(ragContext, null, 2)}
+Write a clear, encouraging patient summary in Markdown (headings and bullet lists, no code blocks):
+1. Why these millets fit their health profile.
+2. Key benefits they can expect.
+3. Simple daily tips for following the plan.
 
-Your task is to write an empathetic, plain-language patient summary. Explain in detail:
-1. Why each prescribed millet is included and how it matches their health conditions, BMI, and lab values.
-2. The specific health benefits they will receive from these millets.
-3. List any precautions or cautions (e.g. oxalate cautions, thyroid limits) and what food items to avoid based strictly on the provided references.
-
-STRICT INSTRUCTIONS:
-- Depend ONLY on the provided JSON data. Do NOT invent external medical advice or mention clinical facts not in the data.
-- Keep the tone warm, empathetic, and encouraging.
-- Format the response in clean, beautiful Markdown with clear headings and lists. No HTML or code blocks.`;
+Keep it concise (under 400 words). Use only the information above.`;
 
     console.log('Calling OpenRouter for prescription summary...');
-    const summary = await generateText(prompt);
+    const summary = await generateText(prompt, { maxTokens: 2048 });
     res.status(200).json({ success: true, summary });
   } catch (error) {
-    console.error('❌ Vectorless RAG Error - Full Details:', {
+    console.error('❌ Prescription summary error:', {
       message: error.message,
       stack: error.stack,
     });
     res.status(500).json({
       success: false,
-      message: 'Failed to generate AI summary explanation: ' + formatOpenRouterError(error),
+      message: 'Failed to generate AI summary: ' + formatOpenRouterError(error),
     });
   }
 };
