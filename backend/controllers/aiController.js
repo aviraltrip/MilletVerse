@@ -1,10 +1,10 @@
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/genai');
 const User = require('../models/User');
 const Prescription = require('../models/Prescription');
 const HealthMapping = require('../models/HealthMapping');
 const Millet = require('../models/Millet');
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // @desc    Interpret doctor's note or symptoms and extract conditions
 // @route   POST /api/ai/interpret-note
@@ -24,12 +24,10 @@ Extract the key health conditions from it. Map them to our standard conditions i
 Return a JSON array of strings. ONLY RETURN THE JSON ARRAY, NO OTHER TEXT OR MARKDOWN EXPLANATIONS.
 Example output: ["diabetes", "hypertension"]`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const response = await model.generateContent(prompt);
     
-    let rawText = response.text;
+    let rawText = response.response.text();
     rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     
     const conditions = JSON.parse(rawText);
@@ -70,12 +68,10 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
   "preparationNotes": "String"
 }`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const response = await model.generateContent(prompt);
     
-    let rawText = response.text;
+    let rawText = response.response.text();
     rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     
     const recipeObj = JSON.parse(rawText);
@@ -172,12 +168,10 @@ STRICT INSTRUCTIONS:
 - Keep the tone warm, empathetic, and encouraging.
 - Format the response in clean, beautiful Markdown with clear headings and lists. No HTML or code blocks.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const response = await model.generateContent(prompt);
 
-    const summary = response.text || '';
+    const summary = response.response.text() || '';
     res.status(200).json({ success: true, summary });
   } catch (error) {
     console.error('Vectorless RAG Error:', error);
