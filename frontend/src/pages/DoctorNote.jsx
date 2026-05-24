@@ -29,7 +29,19 @@ const DoctorNote = () => {
       const res = await api.post('/ai/interpret-note', { noteText });
       setResult(res.data.conditions);
     } catch (err) {
-      setError('Failed to analyze the note. Please make sure your text is clear and try again.');
+      console.error('Analyze Error:', err);
+      // Show helpful message depending on server response
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError('Please log in to use the AI analyzer.');
+        } else if (err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError('Server error while analyzing the note. Try again later.');
+        }
+      } else {
+        setError('Network error while analyzing the note. Check your connection.');
+      }
     } finally {
       setLoading(false);
     }
