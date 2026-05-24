@@ -1,10 +1,53 @@
-const { GoogleGenerativeAI } = require('@google/genai');
+const { GoogleGenAI } = require('@google/genai');
 const User = require('../models/User');
 const Prescription = require('../models/Prescription');
 const HealthMapping = require('../models/HealthMapping');
 const Millet = require('../models/Millet');
 
-const genAI = new GoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
+if (!process.env.GEMINI_API_KEY) {
+  console.error('CRITICAL: GEMINI_API_KEY is not set in .env file!');
+} else {
+  console.log('✓ GEMINI_API_KEY loaded successfully (first 10 chars: ' + process.env.GEMINI_API_KEY.substring(0, 10) + '...)');
+}
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+/** @param {string} prompt */
+async function generateGeminiText(prompt) {
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: prompt,
+  });
+  const text = response?.text;
+  if (!text || !String(text).trim()) {
+    throw new Error('AI returned an empty response. Please try again.');
+  }
+  return String(text).trim();
+}
+
+function formatGeminiError(error) {
+  const rawMessage = error?.message || '';
+  let parsedMessage = rawMessage;
+
+  try {
+    const parsed = JSON.parse(rawMessage);
+    parsedMessage = parsed?.error?.message || rawMessage;
+  } catch {
+    // Keep the original message when Gemini does not return JSON.
+  }
+
+  if (/suspended|permission denied|invalid api key|api key not valid/i.test(parsedMessage)) {
+    return 'Gemini API key is invalid or suspended. Update GEMINI_API_KEY in backend/.env and restart the server.';
+  }
+
+  if (error instanceof SyntaxError) {
+    return 'AI returned an unexpected format. Please try again.';
+  }
+
+  return parsedMessage || 'Failed to process note using AI. Please try again.';
+}
 
 // @desc    Interpret doctor's note or symptoms and extract conditions
 // @route   POST /api/ai/interpret-note
@@ -17,6 +60,11 @@ exports.interpretNote = async (req, res) => {
       return res.status(400).json({ message: 'Please provide note text' });
     }
 
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('FATAL: GEMINI_API_KEY not configured');
+      return res.status(500).json({ message: 'AI service not properly configured. API key missing.' });
+    }
+
     const prompt = `As a clinical nutritionist specializing in functional medicine, analyze the following doctor's note or patient description:
 "${noteText}"
 
@@ -24,24 +72,25 @@ Extract the key health conditions from it. Map them to our standard conditions i
 Return a JSON array of strings. ONLY RETURN THE JSON ARRAY, NO OTHER TEXT OR MARKDOWN EXPLANATIONS.
 Example output: ["diabetes", "hypertension"]`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    const response = await model.generateContent(prompt);
-    
-    let rawText = response.response.text();
+    console.log('Calling Gemini API for note interpretation...');
+    let rawText = await generateGeminiText(prompt);
     rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    
+
     const conditions = JSON.parse(rawText);
+    if (!Array.isArray(conditions)) {
+      throw new Error('AI returned an unexpected format. Please try again.');
+    }
     
     res.status(200).json({ conditions });
   } catch (error) {
-    console.error('AI Processing Error - Full Details:', {
+    console.error('❌ AI Processing Error - Full Details:', {
       message: error.message,
       status: error.status,
       statusText: error.statusText,
-      errorDetails: error
+      stack: error.stack
     });
-    const errorMsg = error.message || 'Failed to process note using AI. Please try again.';
-    res.status(500).json({ message: errorMsg, details: error.message });
+    const errorMsg = formatGeminiError(error);
+    res.status(500).json({ message: errorMsg });
   }
 };
 
@@ -54,6 +103,11 @@ exports.generateRecipe = async (req, res) => {
     
     if (!ingredientsList) {
       return res.status(400).json({ message: 'Please provide some ingredients to base the recipe on.' });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('FATAL: GEMINI_API_KEY not configured');
+      return res.status(500).json({ message: 'AI service not properly configured. API key missing.' });
     }
 
     const prompt = `Act as an expert clinical culinary nutritionist specializing in functional millets. 
@@ -74,22 +128,20 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
   "preparationNotes": "String"
 }`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    const response = await model.generateContent(prompt);
-    
-    let rawText = response.response.text();
+    console.log('Calling Gemini API for recipe generation...');
+    let rawText = await generateGeminiText(prompt);
     rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     
     const recipeObj = JSON.parse(rawText);
     
     res.status(200).json(recipeObj);
   } catch (error) {
-    console.error('AI Recipe Generation Error - Full Details:', {
+    console.error('❌ AI Recipe Generation Error - Full Details:', {
       message: error.message,
       status: error.status,
-      errorDetails: error
+      stack: error.stack
     });
-    res.status(500).json({ message: 'Failed to generate recipe. ' + (error.message || 'AI model might be unavailable.') });
+    res.status(500).json({ message: 'Failed to generate recipe. ' + formatGeminiError(error) });
   }
 };
 
@@ -99,6 +151,11 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
 exports.generatePrescriptionSummary = async (req, res) => {
   try {
     const userId = req.user.id;
+
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('FATAL: GEMINI_API_KEY not configured');
+      return res.status(500).json({ success: false, message: 'AI service not properly configured. API key missing.' });
+    }
 
     // 1. Fetch active prescription
     const prescription = await Prescription.findOne({ userId, isActive: true });
@@ -178,21 +235,18 @@ STRICT INSTRUCTIONS:
 - Keep the tone warm, empathetic, and encouraging.
 - Format the response in clean, beautiful Markdown with clear headings and lists. No HTML or code blocks.`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    const response = await model.generateContent(prompt);
-
-    const summary = response.response.text() || '';
+    console.log('Calling Gemini API for prescription summary...');
+    const summary = await generateGeminiText(prompt);
     res.status(200).json({ success: true, summary });
   } catch (error) {
-    console.error('Vectorless RAG Error - Full Details:', {
+    console.error('❌ Vectorless RAG Error - Full Details:', {
       message: error.message,
       status: error.status,
-      errorDetails: error
+      stack: error.stack
     });
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to generate AI summary explanation: ' + (error.message || 'Unknown error'),
-      error: error.message 
+      message: 'Failed to generate AI summary explanation: ' + formatGeminiError(error),
     });
   }
 };
