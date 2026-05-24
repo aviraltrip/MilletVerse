@@ -39,6 +39,8 @@ const DoctorNote = () => {
         } else {
           setError('Server error while analyzing the note. Try again later.');
         }
+      } else if (err.message) {
+        setError('Error: ' + err.message);
       } else {
         setError('Network error while analyzing the note. Check your connection.');
       }

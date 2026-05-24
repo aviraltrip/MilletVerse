@@ -34,8 +34,14 @@ Example output: ["diabetes", "hypertension"]`;
     
     res.status(200).json({ conditions });
   } catch (error) {
-    console.error('AI Processing Error:', error);
-    res.status(500).json({ message: 'Failed to process note using AI. Please try again.' });
+    console.error('AI Processing Error - Full Details:', {
+      message: error.message,
+      status: error.status,
+      statusText: error.statusText,
+      errorDetails: error
+    });
+    const errorMsg = error.message || 'Failed to process note using AI. Please try again.';
+    res.status(500).json({ message: errorMsg, details: error.message });
   }
 };
 
@@ -78,8 +84,12 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
     
     res.status(200).json(recipeObj);
   } catch (error) {
-    console.error('AI Recipe Generation Error:', error);
-    res.status(500).json({ message: 'Failed to generate recipe. AI model might be unavailable.' });
+    console.error('AI Recipe Generation Error - Full Details:', {
+      message: error.message,
+      status: error.status,
+      errorDetails: error
+    });
+    res.status(500).json({ message: 'Failed to generate recipe. ' + (error.message || 'AI model might be unavailable.') });
   }
 };
 
@@ -174,10 +184,14 @@ STRICT INSTRUCTIONS:
     const summary = response.response.text() || '';
     res.status(200).json({ success: true, summary });
   } catch (error) {
-    console.error('Vectorless RAG Error:', error);
+    console.error('Vectorless RAG Error - Full Details:', {
+      message: error.message,
+      status: error.status,
+      errorDetails: error
+    });
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to generate AI summary explanation', 
+      message: 'Failed to generate AI summary explanation: ' + (error.message || 'Unknown error'),
       error: error.message 
     });
   }
