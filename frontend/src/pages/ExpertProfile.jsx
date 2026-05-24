@@ -9,47 +9,7 @@ const ExpertProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [bookingDate, setBookingDate] = useState('');
-  const [bookingTime, setBookingTime] = useState('');
-  const [bookingNotes, setBookingNotes] = useState('');
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [bookingError, setBookingError] = useState('');
-
-  const handleBookAppointment = async (e) => {
-    e.preventDefault();
-    if (!bookingDate || !bookingTime) {
-      setBookingError('Please select both date and time.');
-      return;
-    }
-
-    setBookingLoading(true);
-    setBookingError('');
-    setBookingSuccess(false);
-
-    try {
-      const dateTime = new Date(`${bookingDate}T${bookingTime}`).toISOString();
-      const res = await api.post('/appointments', {
-        expertId: id,
-        dateTime,
-        notes: bookingNotes
-      });
-
-      if (res.data && res.data.success) {
-        setBookingSuccess(true);
-        setBookingDate('');
-        setBookingTime('');
-        setBookingNotes('');
-      } else {
-        setBookingError('Failed to book appointment. Please try again.');
-      }
-    } catch (err) {
-      console.error(err);
-      setBookingError(err.response?.data?.message || 'Failed to connect to the booking service.');
-    } finally {
-      setBookingLoading(false);
-    }
-  };
+  // Consultation booking has been removed — feature disabled.
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -108,56 +68,11 @@ const ExpertProfile = () => {
 
               <div className="text-left mt-8 border-t border-stone-100 pt-6">
                 <h3 className="text-sm font-bold text-stone-800 uppercase tracking-widest pb-2 mb-4 flex items-center gap-2">
-                  <span>📅</span> Book a Consultation
+                  <span>📅</span> Consultations (Disabled)
                 </h3>
-                {bookingSuccess ? (
-                  <div className="bg-emerald-50 border border-emerald-250 text-emerald-800 p-4 rounded-xl text-xs font-medium space-y-1">
-                    <p className="font-bold">Consultation Booked!</p>
-                    <p>An SMS confirmation has been dispatched to your phone number.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleBookAppointment} className="space-y-4">
-                    {bookingError && (
-                      <p className="text-xs text-red-500 bg-red-50 p-2 rounded border border-red-200">{bookingError}</p>
-                    )}
-                    <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Select Date</label>
-                      <input 
-                        type="date" 
-                        value={bookingDate} 
-                        onChange={(e) => setBookingDate(e.target.value)} 
-                        required
-                        className="w-full p-2 border border-stone-200 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Select Time</label>
-                      <input 
-                        type="time" 
-                        value={bookingTime} 
-                        onChange={(e) => setBookingTime(e.target.value)} 
-                        required
-                        className="w-full p-2 border border-stone-200 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Notes (Optional)</label>
-                      <textarea 
-                        value={bookingNotes} 
-                        onChange={(e) => setBookingNotes(e.target.value)} 
-                        placeholder="E.g., high blood sugar, looking for recipe modifications..."
-                        className="w-full p-2 border border-stone-200 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary h-20 resize-none"
-                      />
-                    </div>
-                    <button 
-                      type="submit" 
-                      disabled={bookingLoading}
-                      className="w-full py-2 bg-primary text-cream rounded-xl text-sm font-bold hover:bg-secondary transition disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                      {bookingLoading ? 'Booking...' : 'Confirm Appointment'}
-                    </button>
-                  </form>
-                )}
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-xl text-sm">
+                  Consultation booking has been disabled. If you need personalised help, please contact support.
+                </div>
               </div>
            </div>
         </div>

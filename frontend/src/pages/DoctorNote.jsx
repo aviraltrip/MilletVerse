@@ -36,9 +36,10 @@ const DoctorNote = () => {
   };
 
   const generatePrescription = async (conditions) => {
-     
-     localStorage.setItem('ai_suggested_conditions', JSON.stringify(conditions));
-     navigate('/onboarding');
+      // Persist AI-suggested conditions and set a flag so onboarding will opt-in SMS
+      localStorage.setItem('ai_suggested_conditions', JSON.stringify(conditions));
+      localStorage.setItem('ai_request_sms', '1');
+      navigate('/onboarding');
   };
 
   return (

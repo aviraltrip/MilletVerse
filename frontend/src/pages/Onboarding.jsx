@@ -73,7 +73,22 @@ const Onboarding = () => {
           hemoglobin: Number(formData.labValues.hemoglobin) || undefined,
         }
       };
+
+      // If the user came from the AI flow and requested SMS, ensure opt-in
+      try {
+        const aiSmsFlag = localStorage.getItem('ai_request_sms');
+        if (aiSmsFlag === '1') {
+          payload.smsEnabled = true;
+        } else {
+          payload.smsEnabled = !!formData.smsEnabled;
+        }
+      } catch (e) {
+        payload.smsEnabled = !!formData.smsEnabled;
+      }
+
       await generatePrescription(payload);
+      // clear ai flow flags
+      try { localStorage.removeItem('ai_request_sms'); } catch (e) {}
       navigate('/dashboard');
     } catch (error) {
       console.error(error);
