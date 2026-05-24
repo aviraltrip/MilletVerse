@@ -7,7 +7,8 @@ exports.generatePrescription = async (req, res) => {
     const userId = req.user.id;
     const { 
       age, weight, height, activityLevel, 
-      conditions = [], labValues = {} 
+      conditions = [], labValues = {},
+      phone, smsEnabled
     } = req.body;
 
     // Calculate BMI
@@ -29,6 +30,8 @@ exports.generatePrescription = async (req, res) => {
         'healthProfile.activityLevel': activityLevel,
         'healthProfile.conditions': conditions,
         'healthProfile.labValues': labValues,
+        phone: phone || undefined,
+        'notificationPreferences.smsEnabled': !!smsEnabled,
         onboardingComplete: true
       }
     });
@@ -107,6 +110,19 @@ exports.generatePrescription = async (req, res) => {
     });
 
     await newPrescription.save();
+
+    // Trigger Twilio SMS notification if phone number exists and opt-in is enabled
+    try {
+      const user = await User.findById(userId);
+      if (user && user.phone) {
+        const smsContent = `Hi ${user.name}! Your personalized millet diet plan (Version ${nextVersion}) has been generated. View details in your dashboard.`;
+        const notificationService = require('../services/notificationService');
+        notificationService.sendSMS(userId, 'diet_plan', user.phone, smsContent)
+          .catch(err => console.error('[Prescription Controller] SMS dispatch error:', err.message));
+      }
+    } catch (smsErr) {
+      console.error('[Prescription Controller] Failed to trigger SMS dispatch workflow:', smsErr.message);
+    }
 
     res.json({ success: true, prescription: newPrescription, bmi, bmiCategory });
   } catch (error) {

@@ -1,9 +1,96 @@
-import React from 'react';
+import React, { useState } from 'react';
 import jsPDF from 'jspdf';
-import { Download, Calendar, Activity } from 'lucide-react';
+import { Download, Calendar, Activity, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import api from '../api/axiosInstance';
+
+const parseInlineBold = (text) => {
+  const parts = text.split(/(\*\*.*?\*\*)/);
+  return parts.map((part, pIdx) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={pIdx} className="font-bold text-stone-850">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
+const renderMarkdown = (text) => {
+  if (!text) return null;
+  const blocks = text.split(/\n\s*\n/);
+  return blocks.map((block, idx) => {
+    const trimmed = block.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith('#')) {
+      const match = trimmed.match(/^(#{1,6})\s+(.*)$/);
+      if (match) {
+        const level = match[1].length;
+        const content = match[2];
+        const sizeClass = 
+          level === 1 ? 'text-xl font-bold text-primary mt-4 mb-2' :
+          level === 2 ? 'text-lg font-bold text-primary mt-3 mb-2' :
+          'text-md font-bold text-secondary mt-2 mb-1';
+        return <h5 key={idx} className={sizeClass}>{parseInlineBold(content)}</h5>;
+      }
+    }
+
+    if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+      const lines = trimmed.split('\n');
+      return (
+        <ul key={idx} className="list-disc pl-5 my-2 space-y-1">
+          {lines.map((line, lIdx) => {
+            const cleanLine = line.replace(/^[\-\*]\s+/, '');
+            return <li key={lIdx} className="text-gray-700 text-sm leading-relaxed">{parseInlineBold(cleanLine)}</li>;
+          })}
+        </ul>
+      );
+    }
+
+    if (/^\d+\./.test(trimmed)) {
+      const lines = trimmed.split('\n');
+      return (
+        <ol key={idx} className="list-decimal pl-5 my-2 space-y-1">
+          {lines.map((line, lIdx) => {
+            const cleanLine = line.replace(/^\d+\.\s+/, '');
+            return <li key={lIdx} className="text-gray-700 text-sm leading-relaxed">{parseInlineBold(cleanLine)}</li>;
+          })}
+        </ol>
+      );
+    }
+
+    return <p key={idx} className="text-gray-700 text-sm leading-relaxed my-2">{parseInlineBold(trimmed)}</p>;
+  });
+};
 
 const PrescriptionCard = ({ prescription, userProfile }) => {
   if (!prescription || !prescription.items) return null;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const toggleOpen = async () => {
+    const nextState = !isOpen;
+    setIsOpen(nextState);
+    
+    if (nextState && !summary && !loading) {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await api.get('/ai/prescription-summary');
+        if (res.data && res.data.success && res.data.summary) {
+          setSummary(res.data.summary);
+        } else {
+          setError('Could not generate summary.');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch AI summary. Please check your connection.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -76,6 +163,41 @@ const PrescriptionCard = ({ prescription, userProfile }) => {
             </p>
           </div>
         ))}
+      </div>
+
+      {/* AI Summary Section */}
+      <div className="border-t border-gray-100 bg-stone-50 p-4">
+        <button 
+          onClick={toggleOpen}
+          className="w-full flex items-center justify-between text-stone-700 hover:text-primary font-semibold text-sm transition"
+        >
+          <div className="flex items-center space-x-2">
+            <Sparkles size={16} className="text-accent animate-pulse" />
+            <span>AI Summary Explanation</span>
+          </div>
+          {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {isOpen && (
+          <div className="mt-4 bg-white border border-stone-200 rounded-lg p-5 shadow-inner max-h-[400px] overflow-y-auto">
+            {loading && (
+              <div className="flex flex-col items-center justify-center py-6 space-y-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span className="text-xs text-stone-500 font-medium animate-pulse">Synthesizing clinical summary...</span>
+              </div>
+            )}
+            
+            {error && (
+              <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>
+            )}
+
+            {!loading && !error && summary && (
+              <div className="space-y-3">
+                {renderMarkdown(summary)}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

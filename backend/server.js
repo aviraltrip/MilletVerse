@@ -15,7 +15,12 @@ const connectDB = require('./config/db');
 dotenv.config();
 
 // Connect to database
+// Connect to database
 connectDB();
+
+// Initialize appointment reminder cron scheduler
+const { startReminderScheduler } = require('./controllers/appointmentController');
+startReminderScheduler();
 
 const app = express();
 
@@ -76,6 +81,7 @@ const expert = require('./routes/expert');
 const ai = require('./routes/ai');
 const healthLog = require('./routes/healthLog');
 const admin = require('./routes/admin');
+const appointment = require('./routes/appointment');
 
 app.use('/api/auth', auth);
 app.use('/api/prescription', prescription);
@@ -85,6 +91,7 @@ app.use('/api/experts', expert);
 app.use('/api/ai', ai);
 app.use('/api/health-logs', healthLog);
 app.use('/api/admin', admin);
+app.use('/api/appointments', appointment);
 
 // In production, we don't serve static files here because Frontend is on Vercel.
 // But we keep the health check.

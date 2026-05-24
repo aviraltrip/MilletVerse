@@ -13,7 +13,9 @@ const Onboarding = () => {
     age: '', weight: '', height: '',
     activityLevel: 'sedentary',
     conditions: [],
-    labValues: { fastingBloodSugar: '', postprandialSugar: '', hemoglobin: '' }
+    labValues: { fastingBloodSugar: '', postprandialSugar: '', hemoglobin: '' },
+    phone: '',
+    smsEnabled: false
   });
 
   useEffect(() => {
@@ -145,6 +147,35 @@ const Onboarding = () => {
             <li><strong>Activity:</strong> {formData.activityLevel.replace('_', ' ')}</li>
             <li><strong>Conditions:</strong> {formData.conditions.length > 0 ? formData.conditions.join(', ') : 'None selected'}</li>
           </ul>
+
+          <div className="border-t pt-4 mt-4 space-y-4">
+            <h4 className="font-bold text-lg text-primary">SMS Notifications (Optional)</h4>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Phone Number (E.164 format, e.g., +917983520752)</label>
+              <input 
+                type="tel" 
+                name="phone" 
+                value={formData.phone} 
+                onChange={handleChange} 
+                placeholder="+917983520752"
+                className="w-full p-2 border rounded-lg"
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2 mt-2">
+              <input 
+                type="checkbox" 
+                id="smsEnabled" 
+                checked={formData.smsEnabled} 
+                onChange={(e) => setFormData(prev => ({ ...prev, smsEnabled: e.target.checked }))} 
+                className="form-checkbox text-primary h-4 w-4"
+              />
+              <label htmlFor="smsEnabled" className="text-sm cursor-pointer select-none">
+                Enable SMS updates for diet plans and appointments (Opt-in)
+              </label>
+            </div>
+          </div>
+
           <p className="text-sm mt-4 text-gray-500">Submitting will calculate and generate your personalized millet prescription.</p>
         </div>
       )}
