@@ -36,6 +36,7 @@ const Navbar = () => {
                 <Link to="/encyclopedia" className="hover:text-primary transition-colors">Encyclopedia</Link>
                 <Link to="/recipes" className="hover:text-primary transition-colors">Recipes</Link>
                 <Link to="/experts" className="hover:text-primary transition-colors">Experts</Link>
+                <Link to="/doctor-note" className="hover:text-primary transition-colors">Doctor Note</Link>
                 <Link to="/map" className="hover:text-primary transition-colors">Map</Link>
               </>
             )}
@@ -93,11 +94,12 @@ const Navbar = () => {
       >
         <div className="bg-primary text-white border-t border-white/10 px-4 py-4 flex flex-col gap-4 text-sm font-medium">
           {role !== 'admin' && [
-            { to: '/encyclopedia', label: 'Encyclopedia' },
-            { to: '/recipes', label: 'Recipes' },
-            { to: '/experts', label: 'Experts' },
-            { to: '/map', label: 'Store Map' },
-          ].map(({ to, label }) => (
+              { to: '/encyclopedia', label: 'Encyclopedia' },
+              { to: '/recipes', label: 'Recipes' },
+              { to: '/experts', label: 'Experts' },
+              { to: '/doctor-note', label: "Doctor Note" },
+              { to: '/map', label: 'Store Map' },
+            ].map(({ to, label }) => (
             <Link key={to} to={to} className={navLink} onClick={() => setMenuOpen(false)}>
               {label}
             </Link>
