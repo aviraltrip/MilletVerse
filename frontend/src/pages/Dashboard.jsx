@@ -9,7 +9,8 @@ const Dashboard = () => {
   const { user, role } = useAuth();
   const navigate = useNavigate();
   const [prescriptions, setPrescriptions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [fetchingPrescriptions, setFetchingPrescriptions] = useState(false);
 
   useEffect(() => {
     if (role === 'expert') {
@@ -20,6 +21,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPrescriptions = async () => {
       if (role === 'expert') return;
+      setFetchingPrescriptions(true);
       try {
         const data = await getMyPrescriptions();
         setPrescriptions(data.prescriptions || []);
@@ -29,13 +31,12 @@ const Dashboard = () => {
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        setFetchingPrescriptions(false);
       }
     };
     fetchPrescriptions();
   }, [navigate, role]);
 
-  if (loading) return <div className="p-8 text-center mt-20">Loading intelligence...</div>;
 
   const activePrescription = prescriptions.find(p => p.isActive) || prescriptions[0];
 
@@ -64,7 +65,15 @@ const Dashboard = () => {
         
         {/* Main Content Area */}
         <div className="md:col-span-2 space-y-8">
-          {activePrescription ? (
+          {fetchingPrescriptions ? (
+            <div className="bg-white p-8 text-center rounded-xl shadow-sm">
+              <div className="animate-pulse">
+                <div className="h-6 bg-stone-100 rounded w-3/4 mx-auto mb-4" />
+                <div className="h-40 bg-stone-100 rounded" />
+              </div>
+              <p className="text-gray-500 mt-4">Loading your personalized intelligence...</p>
+            </div>
+          ) : activePrescription ? (
             <PrescriptionCard prescription={activePrescription} />
           ) : (
             <div className="bg-white p-8 text-center rounded-xl shadow-sm border border-dashed border-gray-300">
