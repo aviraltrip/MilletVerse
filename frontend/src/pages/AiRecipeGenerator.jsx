@@ -56,7 +56,7 @@ const AiRecipeGenerator = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 animate-fade-in">
       <div className="text-center mb-12">
-        <span className="text-accent font-bold tracking-widest uppercase text-sm mb-3 block">Gemini Kitchen</span>
+        <span className="text-accent font-bold tracking-widest uppercase text-sm mb-3 block">AI Kitchen</span>
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary mb-6">AI Recipe Generator</h1>
         <p className="text-lg text-stone-600 max-w-2xl mx-auto">
           Tell us what ingredients you have in your fridge, along with any health conditions. Our AI will craft a personalized millet recipe instantly.

@@ -1,52 +1,20 @@
-const { GoogleGenAI } = require('@google/genai');
 const User = require('../models/User');
 const Prescription = require('../models/Prescription');
 const HealthMapping = require('../models/HealthMapping');
 const Millet = require('../models/Millet');
+const {
+  generateText,
+  formatOpenRouterError,
+  isAiConfigured,
+} = require('../services/openRouterService');
 
-const GEMINI_MODEL = 'gemini-2.5-flash';
-
-if (!process.env.GEMINI_API_KEY) {
-  console.error('CRITICAL: GEMINI_API_KEY is not set in .env file!');
-} else {
-  console.log('✓ GEMINI_API_KEY loaded successfully (first 10 chars: ' + process.env.GEMINI_API_KEY.substring(0, 10) + '...)');
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-/** @param {string} prompt */
-async function generateGeminiText(prompt) {
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    contents: prompt,
-  });
-  const text = response?.text;
-  if (!text || !String(text).trim()) {
-    throw new Error('AI returned an empty response. Please try again.');
+function aiNotConfiguredResponse(res, useSuccessFlag = false) {
+  console.error('FATAL: OPENROUTER_API_KEY not configured');
+  const message = 'AI service not properly configured. API key missing.';
+  if (useSuccessFlag) {
+    return res.status(500).json({ success: false, message });
   }
-  return String(text).trim();
-}
-
-function formatGeminiError(error) {
-  const rawMessage = error?.message || '';
-  let parsedMessage = rawMessage;
-
-  try {
-    const parsed = JSON.parse(rawMessage);
-    parsedMessage = parsed?.error?.message || rawMessage;
-  } catch {
-    // Keep the original message when Gemini does not return JSON.
-  }
-
-  if (/suspended|permission denied|invalid api key|api key not valid/i.test(parsedMessage)) {
-    return 'Gemini API key is invalid or suspended. Update GEMINI_API_KEY in backend/.env and restart the server.';
-  }
-
-  if (error instanceof SyntaxError) {
-    return 'AI returned an unexpected format. Please try again.';
-  }
-
-  return parsedMessage || 'Failed to process note using AI. Please try again.';
+  return res.status(500).json({ message });
 }
 
 // @desc    Interpret doctor's note or symptoms and extract conditions
@@ -55,14 +23,13 @@ function formatGeminiError(error) {
 exports.interpretNote = async (req, res) => {
   try {
     const { noteText } = req.body;
-    
+
     if (!noteText) {
       return res.status(400).json({ message: 'Please provide note text' });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('FATAL: GEMINI_API_KEY not configured');
-      return res.status(500).json({ message: 'AI service not properly configured. API key missing.' });
+    if (!isAiConfigured()) {
+      return aiNotConfiguredResponse(res);
     }
 
     const prompt = `As a clinical nutritionist specializing in functional medicine, analyze the following doctor's note or patient description:
@@ -72,25 +39,22 @@ Extract the key health conditions from it. Map them to our standard conditions i
 Return a JSON array of strings. ONLY RETURN THE JSON ARRAY, NO OTHER TEXT OR MARKDOWN EXPLANATIONS.
 Example output: ["diabetes", "hypertension"]`;
 
-    console.log('Calling Gemini API for note interpretation...');
-    let rawText = await generateGeminiText(prompt);
+    console.log('Calling OpenRouter for note interpretation...');
+    let rawText = await generateText(prompt);
     rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
     const conditions = JSON.parse(rawText);
     if (!Array.isArray(conditions)) {
       throw new Error('AI returned an unexpected format. Please try again.');
     }
-    
+
     res.status(200).json({ conditions });
   } catch (error) {
     console.error('❌ AI Processing Error - Full Details:', {
       message: error.message,
-      status: error.status,
-      statusText: error.statusText,
-      stack: error.stack
+      stack: error.stack,
     });
-    const errorMsg = formatGeminiError(error);
-    res.status(500).json({ message: errorMsg });
+    res.status(500).json({ message: formatOpenRouterError(error) });
   }
 };
 
@@ -100,14 +64,13 @@ Example output: ["diabetes", "hypertension"]`;
 exports.generateRecipe = async (req, res) => {
   try {
     const { ingredientsList, condition } = req.body;
-    
+
     if (!ingredientsList) {
       return res.status(400).json({ message: 'Please provide some ingredients to base the recipe on.' });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('FATAL: GEMINI_API_KEY not configured');
-      return res.status(500).json({ message: 'AI service not properly configured. API key missing.' });
+    if (!isAiConfigured()) {
+      return aiNotConfiguredResponse(res);
     }
 
     const prompt = `Act as an expert clinical culinary nutritionist specializing in functional millets. 
@@ -128,20 +91,19 @@ You MUST return the output EXACTLY in the following JSON format. Do not use mark
   "preparationNotes": "String"
 }`;
 
-    console.log('Calling Gemini API for recipe generation...');
-    let rawText = await generateGeminiText(prompt);
+    console.log('Calling OpenRouter for recipe generation...');
+    let rawText = await generateText(prompt);
     rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    
+
     const recipeObj = JSON.parse(rawText);
-    
+
     res.status(200).json(recipeObj);
   } catch (error) {
     console.error('❌ AI Recipe Generation Error - Full Details:', {
       message: error.message,
-      status: error.status,
-      stack: error.stack
+      stack: error.stack,
     });
-    res.status(500).json({ message: 'Failed to generate recipe. ' + formatGeminiError(error) });
+    res.status(500).json({ message: 'Failed to generate recipe. ' + formatOpenRouterError(error) });
   }
 };
 
@@ -152,21 +114,18 @@ exports.generatePrescriptionSummary = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('FATAL: GEMINI_API_KEY not configured');
-      return res.status(500).json({ success: false, message: 'AI service not properly configured. API key missing.' });
+    if (!isAiConfigured()) {
+      return aiNotConfiguredResponse(res, true);
     }
 
-    // 1. Fetch active prescription
     const prescription = await Prescription.findOne({ userId, isActive: true });
     if (!prescription) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'No active prescription found. Please complete onboarding first.' 
+      return res.status(404).json({
+        success: false,
+        message: 'No active prescription found. Please complete onboarding first.',
       });
     }
 
-    // 2. Fetch user profile
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
@@ -175,13 +134,9 @@ exports.generatePrescriptionSummary = async (req, res) => {
     const healthProfile = user.healthProfile || {};
     const conditions = healthProfile.conditions || [];
 
-    // 3. Fetch health mapping guidelines for these conditions
     const healthMappings = await HealthMapping.find({ condition: { $in: conditions } });
-
-    // 4. Fetch details of all millets
     const millets = await Millet.find({});
 
-    // 5. Structure context into JSON payload for RAG
     const ragContext = {
       patientProfile: {
         age: healthProfile.age,
@@ -190,36 +145,35 @@ exports.generatePrescriptionSummary = async (req, res) => {
         bmi: healthProfile.bmi,
         bmiCategory: healthProfile.bmiCategory,
         conditions: conditions,
-        labValues: healthProfile.labValues || {}
+        labValues: healthProfile.labValues || {},
       },
       prescription: {
         generatedDate: prescription.generatedDate,
         version: prescription.version,
-        items: prescription.items.map(item => ({
+        items: prescription.items.map((item) => ({
           milletName: item.millet,
           quantity: item.quantity,
           form: item.form,
           timing: item.timing,
-          rationale: item.rationale
-        }))
+          rationale: item.rationale,
+        })),
       },
-      clinicalGuidelines: healthMappings.map(mapping => ({
+      clinicalGuidelines: healthMappings.map((mapping) => ({
         condition: mapping.condition,
         recommendedMillets: mapping.recommendedMillets,
         avoidMillets: mapping.avoidMillets,
         timingGuidelines: mapping.timing,
-        rationale: mapping.rationale
+        rationale: mapping.rationale,
       })),
-      milletReferenceData: millets.map(m => ({
+      milletReferenceData: millets.map((m) => ({
         name: m.name,
         localNames: m.localNames,
         nutrients: m.nutrients,
         benefits: m.benefits,
-        cautions: m.cautions
-      }))
+        cautions: m.cautions,
+      })),
     };
 
-    // 6. Formulate strict system prompt for LLM call
     const prompt = `You are a clinical nutritionist and empathetic health guide. You are explaining a personalized millet diet plan to a patient.
 
 Below is the patient's structured health profile and their prescribed millet plan in JSON format:
@@ -235,19 +189,17 @@ STRICT INSTRUCTIONS:
 - Keep the tone warm, empathetic, and encouraging.
 - Format the response in clean, beautiful Markdown with clear headings and lists. No HTML or code blocks.`;
 
-    console.log('Calling Gemini API for prescription summary...');
-    const summary = await generateGeminiText(prompt);
+    console.log('Calling OpenRouter for prescription summary...');
+    const summary = await generateText(prompt);
     res.status(200).json({ success: true, summary });
   } catch (error) {
     console.error('❌ Vectorless RAG Error - Full Details:', {
       message: error.message,
-      status: error.status,
-      stack: error.stack
+      stack: error.stack,
     });
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to generate AI summary explanation: ' + formatGeminiError(error),
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate AI summary explanation: ' + formatOpenRouterError(error),
     });
   }
 };
-

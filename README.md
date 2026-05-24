@@ -68,7 +68,7 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
 # Optional (AI features)
-GEMINI_API_KEY=your_google_gemini_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
 ### Seed the database (optional)
@@ -106,7 +106,7 @@ MilletVerse is optimized for a decoupled deployment: **Backend on Render** and *
    - `JWT_SECRET` & `JWT_REFRESH_SECRET`: Secure random strings.
    - `ADMIN_EMAIL` & `ADMIN_PASSWORD`: Your initial admin credentials.
    - `ALLOWED_ORIGINS`: Your Vercel frontend URL (e.g., `https://millet-verse-ui.vercel.app`).
-   - `CLOUDINARY_URL` / `GEMINI_API_KEY`: (Optional) For images and AI.
+   - `CLOUDINARY_URL` / `OPENROUTER_API_KEY`: (Optional) For images and AI.
 2. **Build Settings**:
    - **Root Directory**: `backend`
    - **Build Command**: `npm install`

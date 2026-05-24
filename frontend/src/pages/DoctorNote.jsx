@@ -59,7 +59,7 @@ const DoctorNote = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 animate-fade-in">
       <div className="text-center mb-12">
-        <span className="text-accent font-bold tracking-widest uppercase text-sm mb-3 block">Gemini AI</span>
+        <span className="text-accent font-bold tracking-widest uppercase text-sm mb-3 block">AI Clinical</span>
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary mb-6">Clinical Interpreter</h1>
         <p className="text-lg text-stone-600 max-w-2xl mx-auto">
           Paste your doctor's prescriptions or clinical notes below. Our AI will analyze your health conditions and map them to therapeutic millet diets.
@@ -83,7 +83,7 @@ const DoctorNote = () => {
 
         <div className="flex justify-between items-center flex-wrap gap-4">
           <p className="text-xs text-stone-400 max-w-sm">
-             Your data is analyzed securely using Google Gemini 2.5 and is not permanently stored.
+             Your data is analyzed securely via OpenRouter and is not permanently stored.
           </p>
           <button 
             onClick={handleAnalyze}
