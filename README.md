@@ -12,12 +12,13 @@ MilletVerse is a full-stack MERN application for millet-based wellness tools: en
 - Maps for store locator and cultivation regions
 - Admin dashboard for managing users, experts, and content
 - AI tools powered by OpenRouter (Gemini-compatible models)
+- Twilio SMS notifications for prescription updates and user alerts
 
 ## Tech stack
 
 - **Frontend**: React, Vite, Tailwind CSS, React Router, Axios, Recharts, React Leaflet
 - **Backend**: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt
-- **External services**: OpenRouter for AI and Cloudinary for optional image uploads
+- **External services**: OpenRouter for AI, Cloudinary for optional image uploads, and Twilio for SMS notifications
 
 ## Repository structure
 
@@ -69,6 +70,9 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 OPENROUTER_API_KEY=your_openrouter_api_key
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_FROM_NUMBER=your_twilio_phone_number
 # OPENROUTER_MODEL=google/gemini-2.5-flash
 ```
 
@@ -112,6 +116,7 @@ Recommended environment variables:
 - `ADMIN_EMAIL` and `ADMIN_PASSWORD`
 - `ALLOWED_ORIGINS` (comma-separated frontend URLs)
 - `OPENROUTER_API_KEY` for AI features
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` for SMS notifications
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` for optional recipe image uploads
 
 Render settings:
