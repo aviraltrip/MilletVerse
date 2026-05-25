@@ -1,132 +1,139 @@
 # MilletVerse
 
-Full‑stack MERN app for millet-based dietary intelligence: encyclopedia + recipes + expert portal + health logging + maps + Gemini-powered tools.
+MilletVerse is a full-stack MERN application for millet-based wellness tools: encyclopedia, recipes, expert directory, health logging, maps, and AI-assisted clinical note interpretation.
 
 ## Features
 
-- **Auth & roles**: JWT auth with role-based access (`user`, `expert`, `admin`)
-- **Millet Encyclopedia**: millet profiles with nutrition + GI/GL
-- **Recipes**: searchable/filterable recipe library (expert + community)
-- **Expert Directory + Expert Portal**: browse experts; experts can publish recipes (with optional image upload)
-- **Health logging**: daily check-in and trend charts
-- **Maps**: store locator + cultivation map (React Leaflet)
-- **Admin panel**: manage users and experts
-- **AI tools (Gemini)**:
-  - Clinical note interpreter (`/doctor-note`)
-  - AI recipe generator (`/ai-recipe`)
+- JWT authentication with role-based access: `user`, `expert`, and `admin`
+- Millet encyclopedia with nutrition, GI/GL, and cultivation insights
+- Recipe library with expert-submitted recipes and optional Cloudinary image upload
+- Expert directory and expert portal
+- Health log submission and trend tracking
+- Maps for store locator and cultivation regions
+- Admin dashboard for managing users, experts, and content
+- AI tools powered by OpenRouter (Gemini-compatible models)
 
 ## Tech stack
 
-- **Frontend**: React (Vite), Tailwind CSS, React Router, Axios, Recharts, React Leaflet
-- **Backend**: Node.js, Express, MongoDB (Mongoose), JWT, bcrypt
-- **Services**: Cloudinary (recipe image uploads), Google Gemini (AI endpoints)
+- **Frontend**: React, Vite, Tailwind CSS, React Router, Axios, Recharts, React Leaflet
+- **Backend**: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt
+- **External services**: OpenRouter for AI and Cloudinary for optional image uploads
 
-## Monorepo layout
+## Repository structure
 
 ```
 milletverse/
-├─ frontend/               # Vite React app
-└─ backend/                # Express API
+├─ backend/                # Express API and server code
+└─ frontend/               # React + Vite frontend
 ```
 
 ## Prerequisites
 
 - Node.js 18+ (Node 20+ recommended)
 - MongoDB (local or Atlas)
-- Optional: Cloudinary account (for recipe image uploads)
-- Optional: Gemini API key (for AI features)
+- Optional: Cloudinary account for image uploads
+- Optional: OpenRouter API key for AI features
 
-## Local setup (Windows / PowerShell)
+## Local setup
 
 ### Install dependencies
 
-```bash
+```powershell
 cd d:\milletverse
-
-cd backend
-npm install
-
-cd ..\frontend
-npm install
+npm install --prefix backend
+npm install --prefix frontend
 ```
 
 ### Backend environment variables
 
-Create `backend/.env`:
+Copy `backend/env.example` to `backend/.env` and update values.
+
+Required values:
 
 ```env
 PORT=5000
+NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 MONGO_URI=mongodb://127.0.0.1:27017/milletverse
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+```
 
-JWT_SECRET=change_me
-JWT_REFRESH_SECRET=change_me_too
+Optional values:
 
-# Optional (recipe image uploads)
+```env
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin123
+ALLOWED_ORIGINS=http://localhost:5173
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-
-# Optional (AI features)
 OPENROUTER_API_KEY=your_openrouter_api_key
+# OPENROUTER_MODEL=google/gemini-2.5-flash
 ```
 
 ### Seed the database (optional)
 
-```bash
+```powershell
 cd d:\milletverse\backend
 node seed.js
 ```
 
 ### Run the app
 
-Backend (API on `http://localhost:5000`):
+Backend:
 
-```bash
+```powershell
 cd d:\milletverse\backend
 npm run dev
 ```
 
-Frontend (web on `http://localhost:5173`):
+Frontend:
 
-```bash
+```powershell
 cd d:\milletverse\frontend
 npm run dev
 ```
 
-## Production Deployment
+The frontend runs on `http://localhost:5173` and the backend API runs on `http://localhost:5000`.
 
-MilletVerse is optimized for a decoupled deployment: **Backend on Render** and **Frontend on Vercel**.
+## Production deployment
 
-### 1. Backend (Render)
+This project is designed as a decoupled frontend/backend application.
 
-1. **Environment Variables**:
-   - `NODE_ENV`: `production`
-   - `MONGO_URI`: Your MongoDB Atlas connection string.
-   - `JWT_SECRET` & `JWT_REFRESH_SECRET`: Secure random strings.
-   - `ADMIN_EMAIL` & `ADMIN_PASSWORD`: Your initial admin credentials.
-   - `ALLOWED_ORIGINS`: Your Vercel frontend URL (e.g., `https://millet-verse-ui.vercel.app`).
-   - `OPENROUTER_API_KEY`: **Required** for AI features (note analysis, recipes, summaries). Get a key at [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
-   - `CLOUDINARY_URL`: (Optional) For recipe image uploads.
-2. **Build Settings**:
-   - **Root Directory**: `backend`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
+### Backend
 
-### 2. Frontend (Vercel)
+Recommended environment variables:
 
-1. **Environment Variables**:
-   - `VITE_API_BASE_URL`: Your Render backend URL + `/api` (e.g., `https://millet-verse-api.onrender.com/api`).
-2. **Build Settings**:
-   - **Framework Preset**: `Vite`
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-3. **Routing**: The included `vercel.json` ensures that client-side routing (React Router) works correctly in production.
+- `NODE_ENV=production`
+- `MONGO_URI`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD`
+- `ALLOWED_ORIGINS` (comma-separated frontend URLs)
+- `OPENROUTER_API_KEY` for AI features
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` for optional recipe image uploads
 
-## Notes & Security
+Render settings:
 
-- **Secure Cookies**: In production (`NODE_ENV=production`), the app uses `SameSite=None` and `Secure` cookies to allow the frontend (Vercel) to communicate with the backend (Render).
-- **NoSQL Injection**: The backend uses `express-mongo-sanitize` to protect against malicious query patterns.
-- **Rate Limiting**: API routes are rate-limited to 200 requests per 15-minute window.
+- Root directory: `backend`
+- Build command: `npm install`
+- Start command: `npm start`
+
+### Frontend
+
+Vercel settings:
+
+- Root directory: `frontend`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Set `VITE_API_BASE_URL` to your deployed backend API base URL (for example `https://your-backend.onrender.com/api`)
+
+## Notes
+
+- AI features are powered by OpenRouter and default to the Gemini-compatible model `google/gemini-2.5-flash`.
+- Cloudinary is optional and only needed when using recipe image uploads.
+- If `ADMIN_EMAIL` or `ADMIN_PASSWORD` are omitted, the server falls back to default values in `backend/controllers/authController.js`.
+- CORS is controlled via `ALLOWED_ORIGINS`.
+- The backend uses security middleware including `helmet`, `compression`, rate limiting, and MongoDB sanitization.
 
